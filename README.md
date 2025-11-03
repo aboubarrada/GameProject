@@ -32,5 +32,5 @@ Le projet cible une implémentation complète en Java afin d'être portable et f
 - Aymen — Game Developer
 - Rodrigue — Game Developer
 
-Bonne création — que le vide soit avec vous !
+
 
