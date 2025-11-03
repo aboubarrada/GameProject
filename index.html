@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heart of the Void - Jeu de Stratégie</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #222;
+            font-family: Arial, sans-serif;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            text-align: center;
+            color: #9370DB;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(147, 112, 219, 0.5);
+        }
+
+        #gameCanvas {
+            border: 2px solid #9370DB;
+            background-color: #0D0D0D;
+            box-shadow: 0 0 20px rgba(147, 112, 219, 0.4);
+        }
+
+        .controls {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .btn {
+            background-color: #6A0DAD;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 0 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            box-shadow: 0 0 10px rgba(106, 13, 173, 0.3);
+        }
+
+        .btn:hover {
+            background-color: #9370DB;
+            box-shadow: 0 0 15px rgba(147, 112, 219, 0.5);
+        }
+
+        .btn:disabled {
+            background-color: #666;
+            cursor: not-allowed;
+        }
+
+        .info {
+            margin-top: 20px;
+            text-align: center;
+            max-width: 800px;
+        }
+
+        .info h3 {
+            color: #9370DB;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .loading {
+            animation: pulse 1.5s infinite;
+        }
+    </style>
+</head>
+<body>
+    <h1>💜 Heart of the Void - Défense du Cœur 💜</h1>
+    
+    <canvas id="gameCanvas" width="1200" height="600"></canvas>
+    
+    <div class="controls">
+        <button id="startBtn" class="btn">Démarrer le Jeu</button>
+        <button id="pauseBtn" class="btn" disabled>Pause</button>
+        <button id="resetBtn" class="btn">Recommencer</button>
+    </div>
+
+
+
+    <div id="loading" class="loading">
+        <h3>Chargement du jeu...</h3>
+    </div>
+
+    <script type="module">
+        import Game from './src/game/Game.js';
+
+        let game = null;
+        let isGameRunning = false;
+
+        // Éléments DOM
+        const startBtn = document.getElementById('startBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const loading = document.getElementById('loading');
+
+        // Initialisation du jeu
+        function initGame() {
+            try {
+                loading.classList.add('show');
+                
+                setTimeout(() => {
+                    game = new Game('gameCanvas');
+                    loading.classList.remove('show');
+                    
+                    console.log('Jeu initialisé avec succès!');
+                    startBtn.disabled = false;
+                }, 1000);
+                
+            } catch (error) {
+                console.error('Erreur lors de l\'initialisation:', error);
+                loading.innerHTML = '<h3 style="color: red;">Erreur de chargement</h3>';
+            }
+        }
+
+        // Gestionnaires d'événements
+        startBtn.addEventListener('click', () => {
+            if (game && !isGameRunning) {
+                game.start();
+                isGameRunning = true;
+                startBtn.disabled = true;
+                pauseBtn.disabled = false;
+                startBtn.textContent = 'Jeu en cours...';
+            }
+        });
+
+        pauseBtn.addEventListener('click', () => {
+            if (game && isGameRunning) {
+                game.togglePause();
+                pauseBtn.textContent = game.isPaused ? 'Reprendre' : 'Pause';
+            }
+        });
+
+        resetBtn.addEventListener('click', () => {
+            if (game) {
+                game.stop();
+                isGameRunning = false;
+                startBtn.disabled = false;
+                pauseBtn.disabled = true;
+                startBtn.textContent = 'Démarrer le Jeu';
+                pauseBtn.textContent = 'Pause';
+                
+                // Réinitialiser le jeu
+                setTimeout(() => {
+                    initGame();
+                }, 500);
+            }
+        });
+
+        // Gestion des raccourcis clavier globaux
+        document.addEventListener('keydown', (e) => {
+            if (game && game.gameUI) {
+                game.gameUI.handleInput(e);
+            }
+        });
+
+        // Gestion des erreurs globales
+        window.addEventListener('error', (e) => {
+            console.error('Erreur globale:', e.error);
+        });
+
+        // Démarrer automatiquement l'initialisation
+        initGame();
+    </script>
+</body>
+</html>
