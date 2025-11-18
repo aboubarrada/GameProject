@@ -38,6 +38,9 @@ public class HeartOfTheVoidGame {
     private int selectedUnitType = 1;
     private double lastEnemySpawn = 0;
     private double gameTime = 0;
+    private int enemiesKilledThisWave = 0;
+    private int enemiesNeededForNextWave = 10;
+    private double difficultyMultiplier = 1.0;
     
     private List<GameUnit> allies = new ArrayList<>();
     private List<GameUnit> enemies = new ArrayList<>();
@@ -47,6 +50,11 @@ public class HeartOfTheVoidGame {
     private GameBase enemyBase;
     
     private Random random = new Random();
+    private Image moneyImage;
+    
+    private Image[] allyImages = new Image[4];
+    private Image[] enemyImages = new Image[4];
+    private Image[] projectileImages = new Image[3];
     
     private Stage gameStage;
     
@@ -60,6 +68,28 @@ public class HeartOfTheVoidGame {
     private void setupUI(Stage stage) {
         canvas = new Canvas(CANVAS_WIDTH, CANVAS_HEIGHT);
         gc = canvas.getGraphicsContext2D();
+        
+        try {
+            moneyImage = new Image("file:resources/images/ui/Money.png");
+            
+            allyImages[0] = new Image("file:resources/images/allies/The_Knight_Idle.png");
+            allyImages[1] = new Image("file:resources/images/allies/200px-Lord_of_Shades.png");
+            allyImages[2] = new Image("file:resources/images/allies/Hornet_Idle.png");
+            allyImages[3] = new Image("file:resources/images/allies/200px-God_of_Gods.png");
+            
+            enemyImages[0] = new Image("file:resources/images/enemies/113px-B_Violent_Husk.png");
+            enemyImages[1] = new Image("file:resources/images/enemies/120px-Broken_Vessel_Idle.png");
+            enemyImages[2] = new Image("file:resources/images/enemies/120px-B_Furious_Vengefly.png");
+            enemyImages[3] = new Image("file:resources/images/enemies/113px-B_Radiance.png");
+            
+            projectileImages[0] = new Image("file:resources/images/projectiles/Void_projectile.png");
+            projectileImages[1] = new Image("file:resources/images/projectiles/Hornet_projectile.png");
+            projectileImages[2] = new Image("file:resources/images/projectiles/ennemy_projectile.png");
+            
+            System.out.println("✅ Toutes les images chargées avec succès!");
+        } catch (Exception e) {
+            System.out.println("❌ Erreur chargement images: " + e.getMessage());
+        }
         
         canvas.setOnMouseClicked(this::handleMouseClick);
         
@@ -97,6 +127,9 @@ public class HeartOfTheVoidGame {
         score = 0;
         gameTime = 0;
         lastEnemySpawn = 0;
+        enemiesKilledThisWave = 0;
+        enemiesNeededForNextWave = 10;
+        difficultyMultiplier = 1.0;
         isRunning = true;
         isPaused = false;
     }
@@ -128,20 +161,20 @@ public class HeartOfTheVoidGame {
     
     private int getAllyCost(int type) {
         return switch (type) {
-            case 1 -> 30;
-            case 2 -> 40;
-            case 3 -> 50;
-            case 4 -> 70;
-            default -> 30;
+            case 1 -> 25;
+            case 2 -> 35;
+            case 3 -> 45;
+            case 4 -> 65;
+            default -> 25;
         };
     }
     
     private GameUnit createAlly(int type, double x, double y) {
         return switch (type) {
-            case 1 -> new GameUnit(x, y, true, 80, 25, 1.5, 60, Color.SILVER, "🛡️Knight");
-            case 2 -> new GameUnit(x, y, true, 60, 30, 2.0, 80, Color.PURPLE, "⚫Vessel");
-            case 3 -> new GameUnit(x, y, true, 50, 35, 2.5, 120, Color.HOTPINK, "🗡️Hornet");
-            case 4 -> new GameUnit(x, y, true, 120, 50, 3.0, 100, Color.GOLD, "✨GodVoid");
+            case 1 -> new GameUnit(x, y, true, 80, 25, 1.5, 60, Color.SILVER, "🛡️Knight", 0);
+            case 2 -> new GameUnit(x, y, true, 60, 30, 2.0, 80, Color.PURPLE, "⚫Vessel", 1);
+            case 3 -> new GameUnit(x, y, true, 50, 35, 2.5, 120, Color.HOTPINK, "🗡️Hornet", 2);
+            case 4 -> new GameUnit(x, y, true, 120, 50, 3.0, 100, Color.GOLD, "✨GodVoid", 3);
             default -> null;
         };
     }
@@ -172,9 +205,11 @@ public class HeartOfTheVoidGame {
     private void updateGame(double deltaTime) {
         gameTime += deltaTime;
         
-        energy = Math.min(MAX_ENERGY, energy + (int)(20 * deltaTime));
+        energy = Math.min(MAX_ENERGY, energy + (int)(15 * deltaTime));
         
-        double spawnInterval = Math.max(1.5, 3.0 - wave * 0.1);
+        double baseInterval = wave <= 3 ? 2.5 : wave <= 6 ? 2.0 : wave <= 10 ? 1.8 : 1.5;
+        double spawnInterval = Math.max(1.0, baseInterval - difficultyMultiplier * 0.2);
+        
         if (gameTime - lastEnemySpawn > spawnInterval) {
             spawnEnemy();
             lastEnemySpawn = gameTime;
@@ -189,17 +224,125 @@ public class HeartOfTheVoidGame {
     
     private void spawnEnemy() {
         int floorY = CANVAS_HEIGHT - 100;
-        int enemyType = 1 + random.nextInt(Math.min(4, 1 + wave / 3));
         
-        GameUnit enemy = switch (enemyType) {
-            case 1 -> new GameUnit(CANVAS_WIDTH-80, floorY, false, 60 + wave*5, 20 + wave*2, 1.0, 50, Color.DARKRED, "💀Husk");
-            case 2 -> new GameUnit(CANVAS_WIDTH-80, floorY, false, 80 + wave*5, 15 + wave*2, 1.5, 40, Color.DARKRED, "🗡️Vessel");
-            case 3 -> new GameUnit(CANVAS_WIDTH-80, floorY, false, 40 + wave*3, 30 + wave*3, 2.0, 60, Color.ORANGERED, "🦋Vengefly");
-            case 4 -> new GameUnit(CANVAS_WIDTH-80, floorY, false, 200 + wave*10, 40 + wave*5, 0.8, 80, Color.YELLOW, "☀️Radiance");
-            default -> new GameUnit(CANVAS_WIDTH-80, floorY, false, 60, 20, 1.0, 50, Color.DARKRED, "💀Husk");
-        };
+        int enemyType = determineEnemyType();
+        int baseHealth = getBaseEnemyHealth(enemyType);
+        int baseDamage = getBaseEnemyDamage(enemyType);
+        double baseSpeed = getBaseEnemySpeed(enemyType);
+        double baseRange = getBaseEnemyRange(enemyType);
+        String enemyName = getEnemyName(enemyType);
+        Color enemyColor = getEnemyColor(enemyType);
+        
+        int scaledHealth = (int)(baseHealth * difficultyMultiplier);
+        int scaledDamage = (int)(baseDamage * difficultyMultiplier);
+        
+        GameUnit enemy = new GameUnit(CANVAS_WIDTH-80, floorY, false, 
+            scaledHealth, scaledDamage, baseSpeed, baseRange, enemyColor, enemyName, enemyType - 1);
         
         enemies.add(enemy);
+    }
+    
+    private int determineEnemyType() {
+        double rand = random.nextDouble();
+        
+        if (wave <= 3) {
+            return rand < 0.8 ? 1 : 2;
+        } else if (wave <= 6) {
+            if (rand < 0.5) return 1;
+            else if (rand < 0.8) return 2;
+            else return 3;
+        } else if (wave <= 10) {
+            if (rand < 0.3) return 1;
+            else if (rand < 0.6) return 2;
+            else if (rand < 0.85) return 3;
+            else return 4;
+        } else {
+            if (rand < 0.2) return 1;
+            else if (rand < 0.4) return 2;
+            else if (rand < 0.7) return 3;
+            else return 4;
+        }
+    }
+    
+    private int getBaseEnemyHealth(int type) {
+        return switch (type) {
+            case 1 -> 50;
+            case 2 -> 75;
+            case 3 -> 35;
+            case 4 -> 150;
+            default -> 50;
+        };
+    }
+    
+    private int getBaseEnemyDamage(int type) {
+        return switch (type) {
+            case 1 -> 15;
+            case 2 -> 20;
+            case 3 -> 25;
+            case 4 -> 35;
+            default -> 15;
+        };
+    }
+    
+    private double getBaseEnemySpeed(int type) {
+        return switch (type) {
+            case 1 -> 1.2;
+            case 2 -> 1.0;
+            case 3 -> 2.5;
+            case 4 -> 0.8;
+            default -> 1.0;
+        };
+    }
+    
+    private double getBaseEnemyRange(int type) {
+        return switch (type) {
+            case 1 -> 45;
+            case 2 -> 50;
+            case 3 -> 60;
+            case 4 -> 80;
+            default -> 50;
+        };
+    }
+    
+    private String getEnemyName(int type) {
+        return switch (type) {
+            case 1 -> "💀Husk";
+            case 2 -> "🗡️Vessel";
+            case 3 -> "🦋Vengefly";
+            case 4 -> "☀️Radiance";
+            default -> "💀Husk";
+        };
+    }
+    
+    private Color getEnemyColor(int type) {
+        return switch (type) {
+            case 1 -> Color.DARKRED;
+            case 2 -> Color.DARKRED;
+            case 3 -> Color.ORANGERED;
+            case 4 -> Color.YELLOW;
+            default -> Color.DARKRED;
+        };
+    }
+    
+    private int getEnemyReward(int type) {
+        int baseReward = switch (type) {
+            case 1 -> 8;
+            case 2 -> 12;
+            case 3 -> 15;
+            case 4 -> 25;
+            default -> 8;
+        };
+        return (int)(baseReward * (1 + wave * 0.1));
+    }
+    
+    private void progressToNextWave() {
+        wave++;
+        enemiesKilledThisWave = 0;
+        enemiesNeededForNextWave = 10 + wave * 2;
+        difficultyMultiplier += 0.15;
+        
+        energy = Math.min(MAX_ENERGY, energy + 30);
+        System.out.println("🌊 Vague " + wave + " ! Difficulté: " + String.format("%.1f", difficultyMultiplier));
     }
     
     private void updateUnits(double deltaTime) {
@@ -214,8 +357,14 @@ public class HeartOfTheVoidGame {
             
             if (!unit.isAlive()) {
                 if (!isAlly) {
-                    energy += 10 + wave;
-                    score += 10 + wave;
+                    int reward = getEnemyReward(unit.unitType + 1);
+                    energy += reward;
+                    score += reward * 2;
+                    enemiesKilledThisWave++;
+                    
+                    if (enemiesKilledThisWave >= enemiesNeededForNextWave) {
+                        progressToNextWave();
+                    }
                 }
                 it.remove();
                 continue;
@@ -236,9 +385,10 @@ public class HeartOfTheVoidGame {
             } else {
                 if (unit.distanceTo(target.x, target.y) <= unit.range) {
                     if (unit.canAttack()) {
+                        int projType = isAlly ? (unit.unitType == 2 ? 1 : 0) : 2;
                         GameProjectile proj = new GameProjectile(
                             unit.x, unit.y, target.x, target.y, 
-                            unit.damage, isAlly ? Color.CYAN : Color.RED
+                            unit.damage, isAlly ? Color.CYAN : Color.RED, projType
                         );
                         projectiles.add(proj);
                         unit.resetAttackCooldown();
@@ -341,45 +491,58 @@ public class HeartOfTheVoidGame {
         enemyBase.render(gc);
         
         for (GameUnit ally : allies) {
-            ally.render(gc);
+            ally.render(gc, allyImages, enemyImages);
         }
         for (GameUnit enemy : enemies) {
-            enemy.render(gc);
+            enemy.render(gc, allyImages, enemyImages);
         }
         
         for (GameProjectile proj : projectiles) {
-            proj.render(gc);
+            proj.render(gc, projectileImages);
         }
         
         renderUI();
     }
     
     private void renderUI() {
-        gc.setFill(Color.web("#1a1a2e"));
-        gc.fillRoundRect(10, 10, 220, 30, 5, 5);
-        
-        double energyPercent = (double) energy / MAX_ENERGY;
-        gc.setFill(Color.web("#9d4edd"));
-        gc.fillRoundRect(12, 12, 216 * energyPercent, 26, 3, 3);
-        
-        gc.setFill(Color.WHITE);
-        gc.setFont(Font.font("Arial", FontWeight.BOLD, 14));
-        gc.fillText("⚡ Énergie: " + energy + "/" + MAX_ENERGY, 15, 30);
+        if (moneyImage != null) {
+            gc.setFill(Color.web("#1a1a2e", 0.8));
+            gc.fillRoundRect(5, 5, 200, 50, 8, 8);
+            
+            gc.drawImage(moneyImage, 10, 10, 40, 40);
+            gc.setFill(Color.GOLD);
+            gc.setFont(Font.font("Arial", FontWeight.BOLD, 18));
+            gc.fillText(": " + energy + "/" + MAX_ENERGY, 55, 35);
+        } else {
+            gc.setFill(Color.web("#1a1a2e"));
+            gc.fillRoundRect(10, 10, 220, 30, 5, 5);
+            
+            double energyPercent = (double) energy / MAX_ENERGY;
+            gc.setFill(Color.web("#9d4edd"));
+            gc.fillRoundRect(12, 12, 216 * energyPercent, 26, 3, 3);
+            
+            gc.setFill(Color.WHITE);
+            gc.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+            gc.fillText("💰 Money: " + energy + "/" + MAX_ENERGY, 15, 30);
+        }
         
         gc.setFill(Color.GOLD);
         gc.setFont(Font.font("Arial", FontWeight.BOLD, 16));
-        gc.fillText("🌊 Vague: " + wave, 10, 60);
-        gc.fillText("🏆 Score: " + score, 10, 80);
+        gc.fillText("🌊 Vague: " + wave + " (Diff: " + String.format("%.1f", difficultyMultiplier) + ")", 10, 70);
+        gc.fillText("🏆 Score: " + score, 10, 90);
         
         gc.setFill(Color.LIGHTBLUE);
         gc.setFont(Font.font("Arial", 12));
-        gc.fillText("🎯 Unité: " + getUnitName(selectedUnitType), 10, 100);
-        gc.fillText("👥 Alliés: " + allies.size(), 10, 115);
-        gc.fillText("👹 Ennemis: " + enemies.size(), 10, 130);
+        gc.fillText("🎯 Unité: " + getUnitName(selectedUnitType), 10, 110);
+        gc.fillText("👥 Alliés: " + allies.size(), 10, 125);
+        gc.fillText("👹 Ennemis: " + enemies.size(), 10, 140);
+        
+        gc.setFill(Color.ORANGE);
+        gc.fillText("💀 Tués: " + enemiesKilledThisWave + "/" + enemiesNeededForNextWave, 10, 155);
         
         gc.setFill(Color.web("#ADD8E6", 0.8));
         gc.setFont(Font.font("Arial", 10));
-        gc.fillText("💡 Touches 1-4: Sélection | Espace: Pause | R: Restart", 10, 150);
+        gc.fillText("💡 Touches 1-4: Sélection | Espace: Pause | R: Restart", 10, 175);
         gc.fillText("💡 Zone de placement des alliés - Cliquez pour placer!", 100, CANVAS_HEIGHT - 10);
         
         if (isPaused) {
@@ -441,13 +604,15 @@ class GameUnit {
     Color color;
     String name;
     boolean isAlly;
+    int unitType;
     double attackCooldown = 0;
     double speed = 30;
     
-    GameUnit(double x, double y, boolean isAlly, int health, int damage, double attackSpeed, double range, Color color, String name) {
+    GameUnit(double x, double y, boolean isAlly, int health, int damage, double attackSpeed, double range, Color color, String name, int unitType) {
         this.x = x;
         this.y = y;
         this.isAlly = isAlly;
+        this.unitType = unitType;
         this.health = this.maxHealth = health;
         this.damage = damage;
         this.attackSpeed = attackSpeed;
@@ -503,24 +668,35 @@ class GameUnit {
         return health > 0;
     }
     
-    void render(GraphicsContext gc) {
+    void render(GraphicsContext gc, Image[] allyImages, Image[] enemyImages) {
         gc.setFill(Color.web("#000000", 0.3));
         gc.fillOval(x-8, y+10, 16, 8);
         
-        if (isAlly) {
-            gc.setFill(Color.web("#6a0dad", 0.3));
-            gc.fillOval(x-15, y-15, 30, 30);
-        } else {
-            gc.setFill(Color.web("#8b0000", 0.3));
-            gc.fillOval(x-15, y-15, 30, 30);
+        Image unitImage = null;
+        if (isAlly && allyImages != null && unitType < allyImages.length && allyImages[unitType] != null) {
+            unitImage = allyImages[unitType];
+        } else if (!isAlly && enemyImages != null && unitType < enemyImages.length && enemyImages[unitType] != null) {
+            unitImage = enemyImages[unitType];
         }
         
-        gc.setFill(color);
-        gc.fillOval(x-12, y-12, 24, 24);
-        
-        gc.setStroke(isAlly ? Color.WHITE : Color.DARKRED);
-        gc.setLineWidth(2);
-        gc.strokeOval(x-12, y-12, 24, 24);
+        if (unitImage != null) {
+            gc.drawImage(unitImage, x-20, y-20, 40, 40);
+        } else {
+            if (isAlly) {
+                gc.setFill(Color.web("#6a0dad", 0.3));
+                gc.fillOval(x-15, y-15, 30, 30);
+            } else {
+                gc.setFill(Color.web("#8b0000", 0.3));
+                gc.fillOval(x-15, y-15, 30, 30);
+            }
+            
+            gc.setFill(color);
+            gc.fillOval(x-12, y-12, 24, 24);
+            
+            gc.setStroke(isAlly ? Color.WHITE : Color.DARKRED);
+            gc.setLineWidth(2);
+            gc.strokeOval(x-12, y-12, 24, 24);
+        }
         
         if (health < maxHealth) {
             gc.setFill(Color.web("#2c2c2c"));
@@ -615,16 +791,18 @@ class GameProjectile {
     double speed = 250;
     int damage;
     Color color;
+    int projectileType;
     double lifetime = 4.0;
     double age = 0;
     
-    GameProjectile(double startX, double startY, double targetX, double targetY, int damage, Color color) {
+    GameProjectile(double startX, double startY, double targetX, double targetY, int damage, Color color, int projectileType) {
         this.x = startX;
         this.y = startY;
         this.targetX = targetX;
         this.targetY = targetY;
         this.damage = damage;
         this.color = color;
+        this.projectileType = projectileType;
     }
     
     void update(double deltaTime) {
@@ -650,15 +828,19 @@ class GameProjectile {
         return distance < 18;
     }
     
-    void render(GraphicsContext gc) {
-        gc.setStroke(Color.web(color.toString(), 0.3));
-        gc.setLineWidth(3);
-        gc.strokeLine(x-5, y, x+5, y);
-        
-        gc.setFill(color);
-        gc.fillOval(x-4, y-4, 8, 8);
-        
-        gc.setFill(Color.web(color.toString(), 0.5));
-        gc.fillOval(x-6, y-6, 12, 12);
+    void render(GraphicsContext gc, Image[] projectileImages) {
+        if (projectileImages != null && projectileType < projectileImages.length && projectileImages[projectileType] != null) {
+            gc.drawImage(projectileImages[projectileType], x-8, y-8, 16, 16);
+        } else {
+            gc.setStroke(Color.web(color.toString(), 0.3));
+            gc.setLineWidth(3);
+            gc.strokeLine(x-5, y, x+5, y);
+            
+            gc.setFill(color);
+            gc.fillOval(x-4, y-4, 8, 8);
+            
+            gc.setFill(Color.web(color.toString(), 0.5));
+            gc.fillOval(x-6, y-6, 12, 12);
+        }
     }
 }
