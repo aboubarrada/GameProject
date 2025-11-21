@@ -25,10 +25,10 @@ public class GameManager {
     
     public GameUnit createAlly(int type, double x, double y) {
         return switch (type) {
-            case 1 -> new GameUnit(x, y, true, 80, 25, 1.5, 60, Color.SILVER, "🛡️Knight", 0);
-            case 2 -> new GameUnit(x, y, true, 60, 30, 2.0, 80, Color.PURPLE, "⚫Vessel", 1);
-            case 3 -> new GameUnit(x, y, true, 50, 35, 2.5, 120, Color.HOTPINK, "🗡️Hornet", 2);
-            case 4 -> new GameUnit(x, y, true, 120, 50, 3.0, 100, Color.GOLD, "✨GodVoid", 3);
+            case 1 -> new GameUnit(x, y, true, 80, 25, 1.5, 60, Color.SILVER, "Knight", 0);
+            case 2 -> new GameUnit(x, y, true, 60, 30, 2.0, 80, Color.PURPLE, "Vessel", 1);
+            case 3 -> new GameUnit(x, y, true, 50, 35, 2.5, 120, Color.HOTPINK, "Hornet", 2);
+            case 4 -> new GameUnit(x, y, true, 120, 50, 3.0, 100, Color.GOLD, "GodVoid", 3);
             default -> null;
         };
     }
@@ -158,11 +158,11 @@ public class GameManager {
     
     private String getEnemyName(int type) {
         return switch (type) {
-            case 1 -> "💀Husk";
-            case 2 -> "🗡️Vessel";
-            case 3 -> "🦋Vengefly";
-            case 4 -> "☀️Radiance";
-            default -> "💀Husk";
+            case 1 -> "Husk";
+            case 2 -> "Vessel";
+            case 3 -> "Vengefly";
+            case 4 -> "Radiance";
+            default -> "Husk";
         };
     }
     

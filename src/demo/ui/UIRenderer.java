@@ -60,7 +60,7 @@ public class UIRenderer {
             
             gc.setFill(Color.WHITE);
             gc.setFont(Font.font("Arial", FontWeight.BOLD, 14));
-            gc.fillText("💰 Money: " + energy + "/" + MAX_ENERGY, 15, 30);
+            gc.fillText("Money: " + energy + "/" + MAX_ENERGY, 15, 30);
         }
     }
     
@@ -133,8 +133,8 @@ public class UIRenderer {
     private void renderControls(GraphicsContext gc) {
         gc.setFill(Color.web("#ADD8E6", 0.8));
         gc.setFont(Font.font("Arial", 10));
-        gc.fillText("💡 Touches 1-4: Sélection | Espace: Pause | R: Restart", 10, 175);
-        gc.fillText("💡 Zone de placement des alliés - Cliquez pour placer!", 100, CANVAS_HEIGHT - 10);
+        gc.fillText("Touches 1-4: Sélection | Espace: Pause | R: Restart", 10, 175);
+        gc.fillText("Zone de placement des alliés - Cliquez pour placer!", 100, CANVAS_HEIGHT - 10);
     }
     
     private void renderControlsHint(GraphicsContext gc) {
@@ -153,7 +153,7 @@ public class UIRenderer {
         
         gc.setFill(Color.YELLOW);
         gc.setFont(Font.font("Arial", FontWeight.BOLD, 36));
-        gc.fillText("⏸️ PAUSE", CANVAS_WIDTH/2 - 80, CANVAS_HEIGHT/2);
+        gc.fillText("PAUSE", CANVAS_WIDTH/2 - 80, CANVAS_HEIGHT/2);
         
         gc.setFont(Font.font("Arial", 16));
         gc.fillText("Appuyez sur ESPACE pour reprendre", CANVAS_WIDTH/2 - 120, CANVAS_HEIGHT/2 + 40);
@@ -165,21 +165,21 @@ public class UIRenderer {
         
         gc.setFill(Color.RED);
         gc.setFont(Font.font("Arial", FontWeight.BOLD, 48));
-        gc.fillText("💀 GAME OVER", CANVAS_WIDTH/2 - 150, CANVAS_HEIGHT/2);
+        gc.fillText("GAME OVER", CANVAS_WIDTH/2 - 150, CANVAS_HEIGHT/2);
         
         gc.setFill(Color.WHITE);
         gc.setFont(Font.font("Arial", 16));
-        gc.fillText("🏆 Score final: " + score + " | 🌊 Vagues: " + (wave-1), CANVAS_WIDTH/2 - 100, CANVAS_HEIGHT/2 + 40);
+        gc.fillText("Score final: " + score + " | Vagues: " + (wave-1), CANVAS_WIDTH/2 - 100, CANVAS_HEIGHT/2 + 40);
         gc.fillText("Appuyez sur R pour recommencer", CANVAS_WIDTH/2 - 90, CANVAS_HEIGHT/2 + 60);
     }
     
     private String getUnitName(int type) {
         return switch (type) {
-            case 1 -> "🛡️ The Knight";
-            case 2 -> "⚫ Void Vessel";
-            case 3 -> "🗡️ Hornet";
-            case 4 -> "✨ God Void";
-            default -> "❓ Unknown";
+            case 1 -> "The Knight";
+            case 2 -> "Void Vessel";
+            case 3 -> "Hornet";
+            case 4 -> "God Void";
+            default -> "Unknown";
         };
     }
 }

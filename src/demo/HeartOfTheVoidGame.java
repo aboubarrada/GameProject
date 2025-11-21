@@ -112,9 +112,9 @@ public class HeartOfTheVoidGame {
             projectileImages[1] = new Image("file:resources/images/projectiles/Hornet_projectile.png");
             projectileImages[2] = new Image("file:resources/images/projectiles/ennemy_projectile.png");
             
-            System.out.println("✅ Toutes les images chargées avec succès!");
+            System.out.println("Toutes les images chargées avec succès!");
         } catch (Exception e) {
-            System.out.println("❌ Erreur chargement images: " + e.getMessage());
+            System.out.println("Erreur chargement images: " + e.getMessage());
         }
         
     canvas.setOnMouseClicked(this::handleMouseClick);
@@ -135,7 +135,7 @@ public class HeartOfTheVoidGame {
         scene.getRoot().setFocusTraversable(true);
         scene.getRoot().requestFocus();
         
-        stage.setTitle("🎮 Heart of the Void - Demo Jouable");
+        stage.setTitle("Heart of the Void - Demo Jouable");
         stage.setScene(scene);
         stage.setOnCloseRequest(e -> {
             audioManager.stopCurrentMusic();
@@ -151,7 +151,7 @@ public class HeartOfTheVoidGame {
         enemyBase = new GameBase(positions.enemyX, positions.floorY, false);
         
         // Debug pour vérifier les coordonnées
-        System.out.println("🏰 Bases créées pour le niveau " + currentLevel + ":");
+        System.out.println("Bases créées pour le niveau " + currentLevel + ":");
         System.out.println("   PlayerBase: x=" + playerBase.x + ", y=" + playerBase.y);
         System.out.println("   EnemyBase: x=" + enemyBase.x + ", y=" + enemyBase.y);
         System.out.println("   FloorY calculé: " + positions.floorY);
@@ -277,7 +277,7 @@ public class HeartOfTheVoidGame {
         difficultyMultiplier += 0.25;
         
         energy = Math.min(MAX_ENERGY, energy + 15);
-        System.out.println("🌊 Vague " + wave + " ! Difficulté: " + String.format("%.1f", difficultyMultiplier));
+        System.out.println("Vague " + wave + " ! Difficulté: " + String.format("%.1f", difficultyMultiplier));
     }
     
     private void updateUnits(double deltaTime) {
@@ -389,7 +389,7 @@ public class HeartOfTheVoidGame {
                     gameLoop.stop();
                 }
                 
-                System.out.println("💀 Partie terminée - DÉFAITE");
+                System.out.println("Partie terminée - DÉFAITE");
             }
             
         } else if (!enemyBase.isAlive() && isRunning) {
@@ -411,7 +411,7 @@ public class HeartOfTheVoidGame {
             enemiesNeededForNextWave = 10 + wave * 3;
             difficultyMultiplier += 0.3;
             
-            System.out.println("🏆 Victoire ! Vague " + wave + " commence");
+            System.out.println("Victoire ! Vague " + wave + " commence");
             
             javafx.animation.Timeline timeline = new javafx.animation.Timeline(
                 new javafx.animation.KeyFrame(javafx.util.Duration.seconds(3), e -> {
@@ -466,16 +466,14 @@ public class HeartOfTheVoidGame {
     private void renderLevelBackground() {
         String backgroundFile = getBackgroundForLevel(currentLevel);
         try {
-            // Cache l'image si pas encore fait pour éviter de la recharger à chaque frame
             javafx.scene.image.Image battlegroundImage = new javafx.scene.image.Image(backgroundFile);
             gc.drawImage(battlegroundImage, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
         } catch (Exception e) {
-            // Fallback grid pattern optimisé - dessine moins souvent
-            renderOptimizedFallback();
+            renderFallback();
         }
     }
     
-    private void renderOptimizedFallback() {
+    private void renderFallback() {
         gc.setFill(Color.web("#0a0a0a"));
         gc.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
         
@@ -541,7 +539,7 @@ public class HeartOfTheVoidGame {
     }
     
     private void returnToMenu() {
-        System.out.println("🔙 Retour au menu de sélection...");
+        System.out.println("Retour au menu de sélection...");
         
         // Arrêter le jeu actuel
         isRunning = false;

@@ -24,12 +24,12 @@ public class AudioManager {
                     backgroundMusic.setVolume(volume);
                     backgroundMusic.setCycleCount(MediaPlayer.INDEFINITE);
                     backgroundMusic.play();
-                    System.out.println("🎵 Musique niveau " + level + " lancée");
+                    System.out.println("Musique niveau " + level + " lancée");
                 } else {
-                    System.out.println("❌ Fichier audio introuvable: " + musicFile);
+                    System.out.println("Fichier audio introuvable: " + musicFile);
                 }
             } catch (Exception e) {
-                System.out.println("❌ Erreur lecture audio: " + e.getMessage());
+                System.out.println("Erreur lecture audio: " + e.getMessage());
             }
         }
     }

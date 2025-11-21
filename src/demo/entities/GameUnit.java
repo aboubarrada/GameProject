@@ -91,7 +91,7 @@ public class GameUnit {
         if (unitImage != null) {
             gc.drawImage(unitImage, x-20, y-20, 40, 40);
         } else {
-            renderOptimizedFallbackSprite(gc);
+            renderFallbackSprite(gc);
         }
         
         if (health < maxHealth) {
@@ -109,7 +109,7 @@ public class GameUnit {
         return true;
     }
     
-    private void renderOptimizedFallbackSprite(GraphicsContext gc) {
+    private void renderFallbackSprite(GraphicsContext gc) {
         gc.setFill(color);
         gc.fillOval(x-12, y-12, 24, 24);
         

@@ -25,7 +25,7 @@ public class SimpleBackgroundMenu extends Application {
             background.setFitHeight(600);
             background.setPreserveRatio(false);
             root.getChildren().add(background);
-            System.out.println("✅ Menu background chargé avec succès!");
+            System.out.println("Menu background chargé avec succès!");
         } catch (Exception e) {
             System.out.println("Erreur chargement image: " + e.getMessage());
             root.setStyle("-fx-background-color: black;");
@@ -79,7 +79,7 @@ public class SimpleBackgroundMenu extends Application {
     }
     
     private void showLevelSelect(Stage stage) {
-        System.out.println("🎮 Passage à la sélection de niveau");
+        System.out.println("Passage à la sélection de niveau");
         
         LevelSelectMenu levelSelect = new LevelSelectMenu();
         levelSelect.start(stage);

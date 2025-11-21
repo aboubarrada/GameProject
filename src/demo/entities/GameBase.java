@@ -18,7 +18,6 @@ public class GameBase {
         this.isPlayerBase = isPlayerBase;
         this.health = this.maxHealth = isPlayerBase ? 500 : 300;
         
-        // Load the appropriate base image
         loadBaseImage();
     }
     
@@ -49,7 +48,7 @@ public class GameBase {
     public void render(GraphicsContext gc) {
         if (y < 400) {
             y = 500;
-            System.out.println("⚠️  Base repositionnée au sol: " + (isPlayerBase ? "Player" : "Enemy"));
+            System.out.println("Base repositionnée au sol: " + (isPlayerBase ? "Player" : "Enemy"));
         }
         
         if (baseImage != null) {
@@ -73,10 +72,8 @@ public class GameBase {
         gc.setFill(baseColor);
         gc.fillRect(x-20, y-40, 40, 80);
         
-        // Détails architecturaux
         renderBaseDetails(gc, baseColor);
         
-        // Drapeau/Toit
         renderFlag(gc);
     }
     

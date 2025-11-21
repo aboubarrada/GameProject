@@ -87,7 +87,7 @@ public class LevelSelectMenu extends Application {
     }
     
     private void startLevel(int levelNumber) {
-        System.out.println("🎮 Lancement du niveau " + levelNumber);
+        System.out.println("Lancement du niveau " + levelNumber);
         
         HeartOfTheVoidGame game = new HeartOfTheVoidGame();
         game.setLevel(levelNumber);
