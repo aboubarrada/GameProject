@@ -1,43 +1,57 @@
 @echo off
-echo 🎮 Heart of the Void - Demo Jouable
-echo ===================================
-
 cd /d "%~dp0"
-
-set JAVAFX_PATH=javafx\lib
-
-echo 🔨 Compilation de la demo jouable...
 
 if not exist "target\classes" mkdir "target\classes"
 
-javac -d target\classes -cp "%JAVAFX_PATH%\*" src\demo\*.java
-
+echo Compilation des entites...
+javac -d target\classes -cp "javafx\lib\*" src\demo\entities\*.java
 if %ERRORLEVEL% neq 0 (
-    echo ❌ Erreur de compilation!
-    echo 📋 Vérifiez que JavaFX est installé dans %JAVAFX_PATH%
+    echo Erreur compilation entities
     pause
     exit /b 1
 )
 
-echo ✅ Compilation réussie!
-echo.
-echo 🚀 Lancement de Heart of the Void avec Menu...
-echo.
-echo 🎯 CONTROLES:
-echo    • Menu: Utilisez les boutons
-echo    • Jeu: Cliquez pour placer des unités
-echo    • Touches 1-4 pour sélectionner le type d'unité
-echo    • ESPACE pour pause
-echo    • R pour recommencer
-echo.
-echo 💜 Amusez-vous bien avec Heart of the Void!
-echo.
+echo Compilation des managers...
+javac -d target\classes -cp "javafx\lib\*;target\classes" src\demo\managers\*.java
+if %ERRORLEVEL% neq 0 (
+    echo Erreur compilation managers
+    pause
+    exit /b 1
+)
 
-java --module-path "%JAVAFX_PATH%" ^
-     --add-modules javafx.controls ^
-     -cp target\classes ^
-     demo.SimpleBackgroundMenu
+echo Compilation de l'UI...
+javac -d target\classes -cp "javafx\lib\*;target\classes" src\demo\ui\*.java
+if %ERRORLEVEL% neq 0 (
+    echo Erreur compilation UI
+    pause
+    exit /b 1
+)
 
-echo.
-echo 👋 Merci d'avoir joué à Heart of the Void!
+echo Compilation de l'audio...
+javac -d target\classes -cp "javafx\lib\*;target\classes" src\demo\audio\*.java
+if %ERRORLEVEL% neq 0 (
+    echo Erreur compilation audio
+    pause
+    exit /b 1
+)
+
+echo Compilation des menus...
+javac -d target\classes -cp "javafx\lib\*;target\classes" src\demo\menus\*.java
+if %ERRORLEVEL% neq 0 (
+    echo Erreur compilation menus
+    pause
+    exit /b 1
+)
+
+echo Compilation du jeu principal...
+javac -d target\classes -cp "javafx\lib\*;target\classes" src\demo\*.java
+if %ERRORLEVEL% neq 0 (
+    echo Erreur compilation principale
+    pause
+    exit /b 1
+)
+
+echo Lancement du menu de selection...
+java -cp "javafx\lib\*;target\classes" demo.menus.LevelSelectMenu
+
 pause

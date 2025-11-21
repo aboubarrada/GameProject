@@ -1,14 +1,16 @@
 package demo;
 
 import javafx.application.Application;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import demo.HeartOfTheVoidGame;
+import demo.menus.LevelSelectMenu;
 
 public class SimpleBackgroundMenu extends Application {
     
@@ -25,36 +27,66 @@ public class SimpleBackgroundMenu extends Application {
             root.getChildren().add(background);
             System.out.println("✅ Menu background chargé avec succès!");
         } catch (Exception e) {
-            System.out.println("❌ Erreur chargement image: " + e.getMessage());
+            System.out.println("Erreur chargement image: " + e.getMessage());
             root.setStyle("-fx-background-color: black;");
         }
         
-        javafx.scene.control.Button playButton = new javafx.scene.control.Button();
-        playButton.setPrefSize(200, 50);
-        playButton.setStyle("-fx-background-color: transparent; -fx-border-color: transparent;");
-        playButton.setOnAction(e -> startGame(stage));
+        // Create title
+        Label title = new Label("Heart of the Void");
+        title.setStyle("-fx-font-size: 48px; -fx-text-fill: white; -fx-font-weight: bold; -fx-effect: dropshadow(gaussian, black, 3, 0.5, 0, 2);");
         
-        StackPane.setAlignment(playButton, javafx.geometry.Pos.CENTER);
-        playButton.setTranslateY(70);
+        // Create play button
+        Button playButton = new Button("Jouer");
+        playButton.setPrefSize(200, 60);
+        playButton.setStyle("-fx-font-size: 24px; " +
+                          "-fx-background-color: rgba(10,10,30,0.85); " +
+                          "-fx-text-fill: white; " +
+                          "-fx-border-color: rgba(0,255,234,0.8); " +
+                          "-fx-border-width: 2px; " +
+                          "-fx-background-radius: 8px; " +
+                          "-fx-border-radius: 8px; " +
+                          "-fx-font-weight: bold;");
         
-        playButton.setOnMouseEntered(e -> playButton.setStyle("-fx-background-color: rgba(255,255,255,0.1); -fx-border-color: transparent;"));
-        playButton.setOnMouseExited(e -> playButton.setStyle("-fx-background-color: transparent; -fx-border-color: transparent;"));
+        playButton.setOnMouseEntered(e -> playButton.setStyle("-fx-font-size: 24px; " +
+                          "-fx-background-color: rgba(0,255,234,0.4); " +
+                          "-fx-text-fill: white; " +
+                          "-fx-border-color: rgba(0,255,234,1.0); " +
+                          "-fx-border-width: 2px; " +
+                          "-fx-background-radius: 8px; " +
+                          "-fx-border-radius: 8px; " +
+                          "-fx-font-weight: bold;"));
         
-        root.getChildren().add(playButton);
+        playButton.setOnMouseExited(e -> playButton.setStyle("-fx-font-size: 24px; " +
+                          "-fx-background-color: rgba(10,10,30,0.85); " +
+                          "-fx-text-fill: white; " +
+                          "-fx-border-color: rgba(0,255,234,0.8); " +
+                          "-fx-border-width: 2px; " +
+                          "-fx-background-radius: 8px; " +
+                          "-fx-border-radius: 8px; " +
+                          "-fx-font-weight: bold;"));
+        
+        playButton.setOnAction(e -> showLevelSelect(stage));
+        
+        // Arrange UI elements
+        VBox menuContainer = new VBox(40);
+        menuContainer.setAlignment(Pos.CENTER);
+        menuContainer.getChildren().addAll(title, playButton);
+        
+        root.getChildren().add(menuContainer);
         
         Scene scene = new Scene(root, 1000, 600);
         
-        stage.setTitle("Heart of the Void - Menu Background");
+        stage.setTitle("Heart of the Void");
         stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
     }
     
-    private void startGame(Stage stage) {
-        System.out.println("🎮 Bouton JOUER cliqué !");
+    private void showLevelSelect(Stage stage) {
+        System.out.println("🎮 Passage à la sélection de niveau");
         
-        HeartOfTheVoidGame game = new HeartOfTheVoidGame();
-        game.start(stage);
+        LevelSelectMenu levelSelect = new LevelSelectMenu();
+        levelSelect.start(stage);
     }
     
     public static void main(String[] args) {
