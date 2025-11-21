@@ -35,12 +35,9 @@ public class UIRenderer {
     
     public void renderGameUI(GraphicsContext gc, int energy, int selectedUnitType, int[] unitCosts, Image[] unitImages,
                              int playerBaseHealth, int playerBaseMax, int enemyBaseHealth, int enemyBaseMax) {
-        // Only render money + unit cards (supprime les icônes de bases en haut)
         renderEnergyBar(gc, energy);
         renderUnitCards(gc, energy, selectedUnitType, unitCosts, unitImages);
-        // renderBaseIcons(gc, playerBaseHealth, playerBaseMax, enemyBaseHealth, enemyBaseMax); // SUPPRIMÉ
         
-        // Afficher les contrôles
         renderControlsHint(gc);
     }
     
@@ -54,7 +51,6 @@ public class UIRenderer {
             gc.setFont(Font.font("Arial", FontWeight.BOLD, 18));
             gc.fillText(": " + energy + "/" + MAX_ENERGY, 55, 35);
         } else {
-            // Fallback sans icône
             gc.setFill(Color.web("#1a1a2e"));
             gc.fillRoundRect(10, 10, 220, 30, 5, 5);
             
@@ -69,7 +65,6 @@ public class UIRenderer {
     }
     
     private void renderUnitCards(GraphicsContext gc, int energy, int selectedUnitType, int[] unitCosts, Image[] unitImages) {
-        // draw a row of cards centered at top
         int cardCount = unitCosts.length;
         int cardW = 90;
         int cardH = 90;
@@ -80,11 +75,9 @@ public class UIRenderer {
 
         for (int i = 0; i < cardCount; i++) {
             int x = startX + i * (cardW + spacing);
-            // background
             gc.setFill(Color.web("#111111", 0.6));
             gc.fillRoundRect(x, y, cardW, cardH, 8, 8);
 
-            // image
             Image img = (unitImages != null && i < unitImages.length) ? unitImages[i] : null;
             if (img != null) {
                 gc.drawImage(img, x + 10, y + 10, cardW - 20, cardH - 38);
@@ -93,20 +86,17 @@ public class UIRenderer {
                 gc.fillRoundRect(x + 10, y + 10, cardW - 20, cardH - 38, 6, 6);
             }
 
-            // cost
             gc.setFill(Color.GOLD);
             gc.setFont(Font.font("Arial", FontWeight.BOLD, 14));
             String costText = "" + unitCosts[i];
             gc.fillText(costText, x + cardW/2 - 8, y + cardH - 10);
 
-            // selection highlight
             if (selectedUnitType == i+1) {
                 gc.setStroke(Color.web("#00ffea", 0.9));
                 gc.setLineWidth(3);
                 gc.strokeRoundRect(x, y, cardW, cardH, 8, 8);
             }
 
-            // grey overlay if not enough energy
             if (energy < unitCosts[i]) {
                 gc.setFill(Color.web("#000000", 0.45));
                 gc.fillRoundRect(x, y, cardW, cardH, 8, 8);
@@ -148,7 +138,6 @@ public class UIRenderer {
     }
     
     private void renderControlsHint(GraphicsContext gc) {
-        // Afficher les contrôles en bas à droite
         gc.setFill(Color.web("#000000", 0.6));
         gc.fillRoundRect(CANVAS_WIDTH - 280, CANVAS_HEIGHT - 50, 270, 40, 6, 6);
         

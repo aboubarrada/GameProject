@@ -23,7 +23,6 @@ public class LevelSelectMenu extends Application {
     private void showLevelSelection() {
         StackPane root = new StackPane();
         
-        // Use one of the game backgrounds for the level selection
         try {
             Image backgroundImage = new Image("file:resources/images/backgrounds/City_of_Tears_background.png");
             ImageView background = new ImageView(backgroundImage);
@@ -35,12 +34,10 @@ public class LevelSelectMenu extends Application {
             root.setStyle("-fx-background-color: #0a0a0a;");
         }
         
-        // Create level buttons without title
         Button level1Btn = createLevelButton("City of Tears", 1);
         Button level2Btn = createLevelButton("Radiance Arena", 2);
         Button level3Btn = createLevelButton("Nightmare Realm", 3);
         
-        // Arrange buttons in center
         VBox buttonContainer = new VBox(20);
         buttonContainer.setAlignment(Pos.CENTER);
         buttonContainer.getChildren().addAll(level1Btn, level2Btn, level3Btn);

@@ -36,8 +36,6 @@ public class GameBase {
     }
     
     public void update(double deltaTime) {
-        // Supprimer la régénération automatique de la base du joueur
-        // Les bases ne se régénèrent plus automatiquement
     }
     
     public void takeDamage(int amount) {
@@ -49,22 +47,18 @@ public class GameBase {
     }
     
     public void render(GraphicsContext gc) {
-        // Force les bases à être au sol (sécurité)
-        if (y < 400) { // Si la base est trop haute
-            y = 500; // Force au sol (CANVAS_HEIGHT - 100)
+        if (y < 400) {
+            y = 500;
             System.out.println("⚠️  Base repositionnée au sol: " + (isPlayerBase ? "Player" : "Enemy"));
         }
         
-        // Use the statue images instead of colored rectangles
         if (baseImage != null) {
             double imageSize = 80;
             gc.drawImage(baseImage, x - imageSize/2, y - imageSize, imageSize, imageSize);
         } else {
-            // Fallback to simple colored rectangle if image fails to load
             renderFallbackBase(gc);
         }
         
-        // Health bar above the base
         renderHealthBar(gc);
     }
     

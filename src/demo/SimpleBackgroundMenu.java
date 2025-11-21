@@ -31,11 +31,8 @@ public class SimpleBackgroundMenu extends Application {
             root.setStyle("-fx-background-color: black;");
         }
         
-        // Create title
         Label title = new Label("Heart of the Void");
         title.setStyle("-fx-font-size: 48px; -fx-text-fill: white; -fx-font-weight: bold; -fx-effect: dropshadow(gaussian, black, 3, 0.5, 0, 2);");
-        
-        // Create play button
         Button playButton = new Button("Jouer");
         playButton.setPrefSize(200, 60);
         playButton.setStyle("-fx-font-size: 24px; " +
@@ -67,7 +64,6 @@ public class SimpleBackgroundMenu extends Application {
         
         playButton.setOnAction(e -> showLevelSelect(stage));
         
-        // Arrange UI elements
         VBox menuContainer = new VBox(40);
         menuContainer.setAlignment(Pos.CENTER);
         menuContainer.getChildren().addAll(title, playButton);

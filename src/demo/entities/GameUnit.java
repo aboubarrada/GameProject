@@ -78,11 +78,9 @@ public class GameUnit {
     }
     
     public void render(GraphicsContext gc, Image[] allyImages, Image[] enemyImages) {
-        // Ombre (optimisée - plus simple)
         gc.setFill(Color.web("#000000", 0.2));
         gc.fillOval(x-6, y+8, 12, 6);
         
-        // Image de l'unité
         Image unitImage = null;
         if (isAlly && allyImages != null && unitType < allyImages.length && allyImages[unitType] != null) {
             unitImage = allyImages[unitType];
@@ -93,16 +91,13 @@ public class GameUnit {
         if (unitImage != null) {
             gc.drawImage(unitImage, x-20, y-20, 40, 40);
         } else {
-            // Fallback si pas d'image (optimisé)
             renderOptimizedFallbackSprite(gc);
         }
         
-        // Barre de vie si endommagé (seulement si nécessaire)
         if (health < maxHealth) {
             renderHealthBar(gc);
         }
         
-        // Cercle de portée seulement si peut attaquer ET si sélectionné ou proche du curseur
         if (canAttack() && range > 0 && shouldShowRange()) {
             gc.setStroke(Color.web(color.toString(), 0.15));
             gc.setLineWidth(1);
@@ -111,13 +106,10 @@ public class GameUnit {
     }
     
     private boolean shouldShowRange() {
-        // On pourrait ajouter une logique pour n'afficher la portée que quand c'est pertinent
-        // Pour l'instant, on l'affiche toujours quand l'unité peut attaquer
         return true;
     }
     
     private void renderOptimizedFallbackSprite(GraphicsContext gc) {
-        // Version optimisée du sprite de fallback
         gc.setFill(color);
         gc.fillOval(x-12, y-12, 24, 24);
         

@@ -23,7 +23,6 @@ import demo.managers.GameManager;
 import demo.ui.UIRenderer;
 import demo.audio.AudioManager;
 
-// Classe pour stocker les positions des bases
 class BasePosition {
     double playerX, enemyX, floorY;
     
@@ -38,8 +37,8 @@ public class HeartOfTheVoidGame {
     
     private static final int CANVAS_WIDTH = 1000;
     private static final int CANVAS_HEIGHT = 600;
-    private static final int INITIAL_ENERGY = 80; // 100 → 80 (début plus difficile)
-    private static final int MAX_ENERGY = 150;    // 200 → 150 (cap plus bas)
+    private static final int INITIAL_ENERGY = 80;
+    private static final int MAX_ENERGY = 150;
     
     private Canvas canvas;
     private GraphicsContext gc;
@@ -184,8 +183,7 @@ public class HeartOfTheVoidGame {
         double x = event.getX();
         double y = event.getY();
 
-        // First check if click is on a unit card (top UI)
-        int[] unitCosts = new int[] {40,60,85,150}; // Nouveaux coûts augmentés
+        int[] unitCosts = new int[] {40,60,85,150};
         int cardCount = unitCosts.length;
         int cardW = 90;
         int cardH = 90;
@@ -198,14 +196,11 @@ public class HeartOfTheVoidGame {
             for (int i = 0; i < cardCount; i++) {
                 int cx = startX + i * (cardW + spacing);
                 if (x >= cx && x <= cx + cardW) {
-                    // select this unit type (1-based)
                     selectedUnitType = i + 1;
                     return;
                 }
             }
         }
-
-        // If not clicking the UI cards, treat as placement on ground
         BasePosition positions = getBasePositionsForLevel(currentLevel);
         double floorY = positions.floorY;
         int floorTolerance = 40;
@@ -253,8 +248,7 @@ public class HeartOfTheVoidGame {
     private void updateGame(double deltaTime) {
         gameTime += deltaTime;
         
-        // Régénération passive drastiquement réduite pour plus de difficulté
-        energy = Math.min(MAX_ENERGY, energy + (int)(3 * deltaTime)); // 15 → 3 (-80%)
+        energy = Math.min(MAX_ENERGY, energy + (int)(3 * deltaTime));
         
         double spawnInterval = gameManager.calculateSpawnInterval(wave, difficultyMultiplier);
         
@@ -279,11 +273,10 @@ public class HeartOfTheVoidGame {
     private void progressToNextWave() {
         wave++;
         enemiesKilledThisWave = 0;
-        enemiesNeededForNextWave = 10 + wave * 3; // Plus d'ennemis requis (+3 au lieu de +2)
-        difficultyMultiplier += 0.25; // Progression plus rapide (0.15 → 0.25)
+        enemiesNeededForNextWave = 10 + wave * 3;
+        difficultyMultiplier += 0.25;
         
-        // Bonus d'énergie réduit pour plus de difficulté
-        energy = Math.min(MAX_ENERGY, energy + 15); // 30 → 15 (-50%)
+        energy = Math.min(MAX_ENERGY, energy + 15);
         System.out.println("🌊 Vague " + wave + " ! Difficulté: " + String.format("%.1f", difficultyMultiplier));
     }
     
@@ -382,19 +375,16 @@ public class HeartOfTheVoidGame {
     
     private void checkGameEnd() {
         if (!playerBase.isAlive()) {
-            // Défaite du joueur - ARRÊT COMPLET
             if (!gameEnded) {
                 isRunning = false;
                 gameEnded = true;
                 gameEndMessage = "DÉFAITE";
                 gameEndColor = Color.RED;
                 
-                // Nettoyer toutes les unités
                 allies.clear();
                 enemies.clear();
                 projectiles.clear();
                 
-                // Arrêter la boucle de jeu
                 if (gameLoop != null) {
                     gameLoop.stop();
                 }
@@ -403,32 +393,26 @@ public class HeartOfTheVoidGame {
             }
             
         } else if (!enemyBase.isAlive() && isRunning) {
-            // Victoire - prochaine vague
             wave++;
             
-            // Afficher message de victoire temporaire
             gameEndMessage = "VICTOIRE - Vague " + wave;
             gameEndColor = Color.GOLD;
             
-            // Nettoyer les unités ennemies
             enemies.clear();
             projectiles.clear();
             
-            // Recréer base ennemie avec les bonnes coordonnées pour le niveau
             BasePosition positions = getBasePositionsForLevel(currentLevel);
             enemyBase = new GameBase(positions.enemyX, positions.floorY, false);
             enemyBase.health = enemyBase.maxHealth = 300 + wave * 100;
-            energy = Math.min(MAX_ENERGY, energy + 25); // Bonus réduit: 50 → 25
+            energy = Math.min(MAX_ENERGY, energy + 25);
             score += 100;
             
-            // Reset des statistiques de vague
             enemiesKilledThisWave = 0;
-            enemiesNeededForNextWave = 10 + wave * 3; // Plus d'ennemis requis
-            difficultyMultiplier += 0.3; // Progression encore plus rapide (+0.3 au lieu de +0.2)
+            enemiesNeededForNextWave = 10 + wave * 3;
+            difficultyMultiplier += 0.3;
             
             System.out.println("🏆 Victoire ! Vague " + wave + " commence");
             
-            // Réinitialiser le message après 3 secondes
             javafx.animation.Timeline timeline = new javafx.animation.Timeline(
                 new javafx.animation.KeyFrame(javafx.util.Duration.seconds(3), e -> {
                     gameEndMessage = "";
@@ -439,10 +423,8 @@ public class HeartOfTheVoidGame {
     }
     
     private void renderGame() {
-        // Render background based on level
         renderLevelBackground();
         
-        // Rendre les bases seulement si le jeu est en cours
         if (isRunning && !gameEnded) {
             playerBase.render(gc);
             enemyBase.render(gc);
@@ -459,23 +441,20 @@ public class HeartOfTheVoidGame {
             proj.render(gc, projectileImages);
         }
         
-        // Rendu UI avec le nouveau gestionnaire
         if (isPaused) {
             uiRenderer.renderPauseScreen(gc);
         } else if (!isRunning) {
             uiRenderer.renderGameOverScreen(gc, score, wave);
         } else {
-            int[] unitCosts = new int[] {40,60,85,150}; // Nouveaux coûts augmentés
+            int[] unitCosts = new int[] {40,60,85,150};
             uiRenderer.renderGameUI(gc, energy, selectedUnitType, unitCosts, allyImages,
                     playerBase.health, playerBase.maxHealth, enemyBase.health, enemyBase.maxHealth);
         }
         
-        // Afficher messages de victoire/défaite
         if (!gameEndMessage.isEmpty()) {
             gc.setFill(gameEndColor);
             gc.setFont(javafx.scene.text.Font.font("Arial", 48));
             
-            // Centrer le texte
             javafx.scene.text.Text tempText = new javafx.scene.text.Text(gameEndMessage);
             tempText.setFont(javafx.scene.text.Font.font("Arial", 48));
             double textWidth = tempText.getBoundsInLocal().getWidth();
@@ -500,10 +479,9 @@ public class HeartOfTheVoidGame {
         gc.setFill(Color.web("#0a0a0a"));
         gc.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
         
-        // Grille plus espacée pour de meilleures performances
         gc.setStroke(Color.web("#2d1b69", 0.3));
         gc.setLineWidth(1);
-        for (int i = 0; i < CANVAS_WIDTH; i += 100) { // Espacement doublé
+        for (int i = 0; i < CANVAS_WIDTH; i += 100) {
             gc.strokeLine(i, 0, i, CANVAS_HEIGHT);
         }
         for (int i = 0; i < CANVAS_HEIGHT; i += 100) {
@@ -522,25 +500,25 @@ public class HeartOfTheVoidGame {
     
     private BasePosition getBasePositionsForLevel(int level) {
         return switch (level) {
-            case 1 -> { // City of Tears - décaler vers la droite pour éviter le vide
-                double playerX = 150; // Encore plus vers la droite (était 120)
-                double enemyX = CANVAS_WIDTH - 120; // Plus vers la gauche (était CANVAS_WIDTH-80)
-                double floorY = CANVAS_HEIGHT - 90; // Un peu plus bas (était -100)
+            case 1 -> {
+                double playerX = 150;
+                double enemyX = CANVAS_WIDTH - 120;
+                double floorY = CANVAS_HEIGHT - 90;
                 yield new BasePosition(playerX, enemyX, floorY);
             }
-            case 2 -> { // Radiance Arena - rabaisser un peu
-                double playerX = 80; // Position standard
-                double enemyX = CANVAS_WIDTH - 80; // Position standard
-                double floorY = CANVAS_HEIGHT - 80; // Plus bas (était -100)
+            case 2 -> {
+                double playerX = 80;
+                double enemyX = CANVAS_WIDTH - 80;
+                double floorY = CANVAS_HEIGHT - 80;
                 yield new BasePosition(playerX, enemyX, floorY);
             }
-            case 3 -> { // Nightmare - rabaisser un peu
-                double playerX = 80; // Position standard
-                double enemyX = CANVAS_WIDTH - 80; // Position standard
-                double floorY = CANVAS_HEIGHT - 80; // Plus bas (était -100)
+            case 3 -> {
+                double playerX = 80;
+                double enemyX = CANVAS_WIDTH - 80;
+                double floorY = CANVAS_HEIGHT - 80;
                 yield new BasePosition(playerX, enemyX, floorY);
             }
-            default -> { // Position par défaut
+            default -> {
                 double playerX = 80;
                 double enemyX = CANVAS_WIDTH - 80;
                 double floorY = CANVAS_HEIGHT - 100;

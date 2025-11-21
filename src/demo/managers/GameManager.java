@@ -15,10 +15,10 @@ public class GameManager {
     
     public int getAllyCost(int type) {
         return switch (type) {
-            case 1 -> 40;  // Knight: 25 → 40 (+60%)
-            case 2 -> 60;  // Vessel: 35 → 60 (+71%) 
-            case 3 -> 85;  // Hornet: 45 → 85 (+89%)
-            case 4 -> 150; // GodVoid: 65 → 150 (+131%) - TRÈS CHER!
+            case 1 -> 40;
+            case 2 -> 60;
+            case 3 -> 85;
+            case 4 -> 150;
             default -> 40;
         };
     }
@@ -67,9 +67,8 @@ public class GameManager {
     }
     
     public double calculateSpawnInterval(int wave, double difficultyMultiplier) {
-        // Intervalles de spawn plus agressifs pour plus de difficulté
-        double baseInterval = wave <= 3 ? 2.0 : wave <= 6 ? 1.5 : wave <= 10 ? 1.2 : 0.8; // Plus rapide
-        return Math.max(0.6, baseInterval - difficultyMultiplier * 0.3); // Minimum plus bas, réduction plus forte
+        double baseInterval = wave <= 3 ? 2.0 : wave <= 6 ? 1.5 : wave <= 10 ? 1.2 : 0.8;
+        return Math.max(0.6, baseInterval - difficultyMultiplier * 0.3);
     }
     
     public GameUnit findClosestTarget(GameUnit unit, List<GameUnit> targets) {
