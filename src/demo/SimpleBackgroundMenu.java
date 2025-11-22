@@ -10,7 +10,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import demo.menus.LevelSelectMenu;
 
 public class SimpleBackgroundMenu extends Application {
     
@@ -31,44 +30,29 @@ public class SimpleBackgroundMenu extends Application {
             root.setStyle("-fx-background-color: black;");
         }
         
-        Label title = new Label("Heart of the Void");
-        title.setStyle("-fx-font-size: 48px; -fx-text-fill: white; -fx-font-weight: bold; -fx-effect: dropshadow(gaussian, black, 3, 0.5, 0, 2);");
-        Button playButton = new Button("Jouer");
-        playButton.setPrefSize(200, 60);
-        playButton.setStyle("-fx-font-size: 24px; " +
-                          "-fx-background-color: rgba(10,10,30,0.85); " +
-                          "-fx-text-fill: white; " +
-                          "-fx-border-color: rgba(0,255,234,0.8); " +
-                          "-fx-border-width: 2px; " +
-                          "-fx-background-radius: 8px; " +
-                          "-fx-border-radius: 8px; " +
-                          "-fx-font-weight: bold;");
+        // Bouton invisible pour démarrer le jeu - ajustez la position selon votre background
+        Button invisiblePlayButton = new Button();
+        invisiblePlayButton.setPrefSize(250, 80); // Taille réduite
+        invisiblePlayButton.setStyle("-fx-background-color: transparent; " +
+                                   "-fx-border-color: transparent; " +
+                                   "-fx-text-fill: transparent;");
         
-        playButton.setOnMouseEntered(e -> playButton.setStyle("-fx-font-size: 24px; " +
-                          "-fx-background-color: rgba(0,255,234,0.4); " +
-                          "-fx-text-fill: white; " +
-                          "-fx-border-color: rgba(0,255,234,1.0); " +
-                          "-fx-border-width: 2px; " +
-                          "-fx-background-radius: 8px; " +
-                          "-fx-border-radius: 8px; " +
-                          "-fx-font-weight: bold;"));
+        // Effet grisé au survol
+        invisiblePlayButton.setOnMouseEntered(e -> invisiblePlayButton.setStyle("-fx-background-color: rgba(128, 128, 128, 0.6); " +
+                                   "-fx-border-color: transparent; " +
+                                   "-fx-text-fill: transparent;"));
         
-        playButton.setOnMouseExited(e -> playButton.setStyle("-fx-font-size: 24px; " +
-                          "-fx-background-color: rgba(10,10,30,0.85); " +
-                          "-fx-text-fill: white; " +
-                          "-fx-border-color: rgba(0,255,234,0.8); " +
-                          "-fx-border-width: 2px; " +
-                          "-fx-background-radius: 8px; " +
-                          "-fx-border-radius: 8px; " +
-                          "-fx-font-weight: bold;"));
+        invisiblePlayButton.setOnMouseExited(e -> invisiblePlayButton.setStyle("-fx-background-color: transparent; " +
+                                   "-fx-border-color: transparent; " +
+                                   "-fx-text-fill: transparent;"));
         
-        playButton.setOnAction(e -> showLevelSelect(stage));
+        invisiblePlayButton.setOnAction(e -> showLevelSelect(stage));
         
-        VBox menuContainer = new VBox(40);
-        menuContainer.setAlignment(Pos.CENTER);
-        menuContainer.getChildren().addAll(title, playButton);
+        // Positionner le bouton sur la zone "Jouer" du background
+        invisiblePlayButton.setLayoutX(375); // Centré horizontalement pour la zone "Jouer"
+        invisiblePlayButton.setLayoutY(500); // Sur la zone "Jouer" du background
         
-        root.getChildren().add(menuContainer);
+        root.getChildren().add(invisiblePlayButton);
         
         Scene scene = new Scene(root, 1000, 600);
         
@@ -81,8 +65,17 @@ public class SimpleBackgroundMenu extends Application {
     private void showLevelSelect(Stage stage) {
         System.out.println("Passage à la sélection de niveau");
         
-        LevelSelectMenu levelSelect = new LevelSelectMenu();
-        levelSelect.start(stage);
+        try {
+            Class<?> levelSelectClass = Class.forName("demo.menus.LevelSelectMenu");
+            Object levelSelect = levelSelectClass.getDeclaredConstructor().newInstance();
+            
+            java.lang.reflect.Method startMethod = levelSelectClass.getMethod("start", Stage.class);
+            startMethod.invoke(levelSelect, stage);
+            
+        } catch (Exception e) {
+            System.err.println("Erreur lors du passage au menu de sélection: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
     
     public static void main(String[] args) {

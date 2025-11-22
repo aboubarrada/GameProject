@@ -555,8 +555,19 @@ public class HeartOfTheVoidGame {
         }
         
         // Retourner au menu de sélection
-        demo.menus.LevelSelectMenu levelMenu = new demo.menus.LevelSelectMenu();
-        levelMenu.start((javafx.stage.Stage) canvas.getScene().getWindow());
+        try {
+            Class<?> levelSelectClass = Class.forName("demo.menus.LevelSelectMenu");
+            Object levelMenu = levelSelectClass.getDeclaredConstructor().newInstance();
+            
+            java.lang.reflect.Method startMethod = levelSelectClass.getMethod("start", Stage.class);
+            startMethod.invoke(levelMenu, (javafx.stage.Stage) canvas.getScene().getWindow());
+            
+        } catch (Exception e) {
+            System.err.println("Erreur lors du retour au menu: " + e.getMessage());
+            e.printStackTrace();
+            // En cas d'erreur, fermer la fenêtre
+            ((javafx.stage.Stage) canvas.getScene().getWindow()).close();
+        }
     }
     
     private void stopGame() {

@@ -51,7 +51,7 @@ if %ERRORLEVEL% neq 0 (
     exit /b 1
 )
 
-echo Lancement du menu de selection...
-java -cp "javafx\lib\*;target\classes" demo.menus.LevelSelectMenu
+echo Lancement du menu principal...
+java -cp "javafx\lib\*;target\classes" demo.SimpleBackgroundMenu
 
 pause

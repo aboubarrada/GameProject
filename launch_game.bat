@@ -69,21 +69,21 @@ echo  Lancement du jeu...
 echo ================================
 echo.
 
-REM Tentative avec module-path
-java --module-path "javafx\lib" --add-modules javafx.controls,javafx.media -cp target\classes demo.menus.LevelSelectMenu
+REM Tentative avec module-path - Commencer par le menu principal
+java --module-path "javafx\lib" --add-modules javafx.controls,javafx.fxml,javafx.media -cp target\classes demo.SimpleBackgroundMenu
 
-REM Si échec, tentative avec classpath simple
+REM Si échec, tentative avec classpath simple - Menu principal
 if %ERRORLEVEL% neq 0 (
     echo.
     echo Tentative avec classpath simple...
-    java -Djava.library.path="javafx\lib" -cp "javafx\lib\*;target\classes" demo.menus.LevelSelectMenu
+    java -Djava.library.path="javafx\lib" -cp "javafx\lib\*;target\classes" demo.SimpleBackgroundMenu
 )
 
-REM Si échec, lancement du menu simple
+REM Si échec, lancement du menu de sélection directement
 if %ERRORLEVEL% neq 0 (
     echo.
-    echo Lancement du menu de base...
-    java -Djava.library.path="javafx\lib" -cp "javafx\lib\*;target\classes" demo.SimpleBackgroundMenu
+    echo Lancement du menu de sélection...
+    java -Djava.library.path="javafx\lib" -cp "javafx\lib\*;target\classes" demo.menus.LevelSelectMenu
 )
 
 echo.
