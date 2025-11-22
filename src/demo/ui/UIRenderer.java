@@ -43,10 +43,13 @@ public class UIRenderer {
     
     private void renderEnergyBar(GraphicsContext gc, int energy) {
         if (moneyImage != null) {
-            gc.setFill(Color.web("#1a1a2e", 0.8));
-            gc.fillRoundRect(5, 5, 200, 50, 8, 8);
-            
+            gc.save();
+            gc.beginPath();
+            gc.rect(10, 10, 40, 40);
+            gc.clip();
             gc.drawImage(moneyImage, 10, 10, 40, 40);
+            gc.restore();
+            
             gc.setFill(Color.GOLD);
             gc.setFont(Font.font("Arial", FontWeight.BOLD, 18));
             gc.fillText(": " + energy + "/" + MAX_ENERGY, 55, 35);

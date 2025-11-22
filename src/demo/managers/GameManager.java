@@ -25,10 +25,10 @@ public class GameManager {
     
     public GameUnit createAlly(int type, double x, double y) {
         return switch (type) {
-            case 1 -> new GameUnit(x, y, true, 80, 25, 1.5, 60, Color.SILVER, "Knight", 0);
-            case 2 -> new GameUnit(x, y, true, 60, 30, 2.0, 80, Color.PURPLE, "Vessel", 1);
-            case 3 -> new GameUnit(x, y, true, 50, 35, 2.5, 120, Color.HOTPINK, "Hornet", 2);
-            case 4 -> new GameUnit(x, y, true, 120, 50, 3.0, 100, Color.GOLD, "GodVoid", 3);
+            case 1 -> new GameUnit(x, y, true, 80, 25, 1.5, 100, Color.SILVER, "Knight", 0);
+            case 2 -> new GameUnit(x, y, true, 60, 30, 2.0, 120, Color.PURPLE, "Vessel", 1);
+            case 3 -> new GameUnit(x, y, true, 50, 35, 2.5, 150, Color.HOTPINK, "Hornet", 2);
+            case 4 -> new GameUnit(x, y, true, 120, 50, 3.0, 140, Color.GOLD, "GodVoid", 3);
             default -> null;
         };
     }
@@ -52,6 +52,23 @@ public class GameManager {
         int scaledDamage = (int)(baseDamage * difficultyMultiplier);
         
         return new GameUnit(CANVAS_WIDTH-80, floorY, false, 
+            scaledHealth, scaledDamage, baseSpeed, baseRange, enemyColor, enemyName, enemyType - 1);
+    }
+    
+    public GameUnit createEnemyAtPosition(int wave, double difficultyMultiplier, double x, double floorY) {
+        int enemyType = wave;
+        
+        int baseHealth = getBaseEnemyHealth(enemyType);
+        int baseDamage = getBaseEnemyDamage(enemyType);
+        double baseSpeed = getBaseEnemySpeed(enemyType);
+        double baseRange = getBaseEnemyRange(enemyType);
+        String enemyName = getEnemyName(enemyType);
+        Color enemyColor = getEnemyColor(enemyType);
+        
+        int scaledHealth = (int)(baseHealth * difficultyMultiplier);
+        int scaledDamage = (int)(baseDamage * difficultyMultiplier);
+        
+        return new GameUnit(x, floorY, false, 
             scaledHealth, scaledDamage, baseSpeed, baseRange, enemyColor, enemyName, enemyType - 1);
     }
     
@@ -118,21 +135,21 @@ public class GameManager {
     
     private int getBaseEnemyHealth(int type) {
         return switch (type) {
-            case 1 -> 50;
-            case 2 -> 75;
-            case 3 -> 35;
-            case 4 -> 150;
-            default -> 50;
+            case 1 -> 40;
+            case 2 -> 60;
+            case 3 -> 30;
+            case 4 -> 100;
+            default -> 40;
         };
     }
     
     private int getBaseEnemyDamage(int type) {
         return switch (type) {
-            case 1 -> 15;
-            case 2 -> 20;
-            case 3 -> 25;
-            case 4 -> 35;
-            default -> 15;
+            case 1 -> 10;
+            case 2 -> 15;
+            case 3 -> 18;
+            case 4 -> 25;
+            default -> 10;
         };
     }
     
@@ -148,11 +165,11 @@ public class GameManager {
     
     private double getBaseEnemyRange(int type) {
         return switch (type) {
-            case 1 -> 45;
-            case 2 -> 50;
-            case 3 -> 60;
-            case 4 -> 80;
-            default -> 50;
+            case 1 -> 70;
+            case 2 -> 80;
+            case 3 -> 90;
+            case 4 -> 100;
+            default -> 70;
         };
     }
     

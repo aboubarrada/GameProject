@@ -50,13 +50,11 @@ public class HeartOfTheVoidGame {
     private Color gameEndColor = Color.WHITE;
     
     private int energy = INITIAL_ENERGY;
-    private int wave = 1;
     private int score = 0;
     private int selectedUnitType = 1;
     private double lastEnemySpawn = 0;
     private double gameTime = 0;
-    private int enemiesKilledThisWave = 0;
-    private int enemiesNeededForNextWave = 10;
+    private double lastMoneyRegen = 0;
     private double difficultyMultiplier = 1.0;
     
     private List<GameUnit> allies = new ArrayList<>();
@@ -111,10 +109,7 @@ public class HeartOfTheVoidGame {
             projectileImages[0] = new Image("file:resources/images/projectiles/Void_projectile.png");
             projectileImages[1] = new Image("file:resources/images/projectiles/Hornet_projectile.png");
             projectileImages[2] = new Image("file:resources/images/projectiles/ennemy_projectile.png");
-            
-            System.out.println("Toutes les images chargées avec succès!");
         } catch (Exception e) {
-            System.out.println("Erreur chargement images: " + e.getMessage());
         }
         
     canvas.setOnMouseClicked(this::handleMouseClick);
@@ -144,34 +139,35 @@ public class HeartOfTheVoidGame {
     }
     
     private void initializeGame() {
-        // Calculer les positions des bases selon le niveau
         BasePosition positions = getBasePositionsForLevel(currentLevel);
         
         playerBase = new GameBase(positions.playerX, positions.floorY, true);
         enemyBase = new GameBase(positions.enemyX, positions.floorY, false);
         
-        // Debug pour vérifier les coordonnées
-        System.out.println("Bases créées pour le niveau " + currentLevel + ":");
-        System.out.println("   PlayerBase: x=" + playerBase.x + ", y=" + playerBase.y);
-        System.out.println("   EnemyBase: x=" + enemyBase.x + ", y=" + enemyBase.y);
-        System.out.println("   FloorY calculé: " + positions.floorY);
+        if (currentLevel == 1) {
+            playerBase.health = playerBase.maxHealth = 500;
+            enemyBase.health = enemyBase.maxHealth = 400;
+        } else if (currentLevel == 2) {
+            playerBase.health = playerBase.maxHealth = 400;
+            enemyBase.health = enemyBase.maxHealth = 600;
+        } else if (currentLevel == 3) {
+            playerBase.health = playerBase.maxHealth = 1;
+            enemyBase.health = enemyBase.maxHealth = 800;
+        }
         
         allies.clear();
         enemies.clear();
         projectiles.clear();
         
         energy = INITIAL_ENERGY;
-        wave = 1;
         score = 0;
         gameTime = 0;
         lastEnemySpawn = 0;
-        enemiesKilledThisWave = 0;
-        enemiesNeededForNextWave = 10;
+        lastMoneyRegen = 0;
         difficultyMultiplier = 1.0;
         isRunning = true;
         isPaused = false;
         
-        // Reset des variables de fin de jeu
         gameEnded = false;
         gameEndMessage = "";
         gameEndColor = Color.WHITE;
@@ -197,24 +193,18 @@ public class HeartOfTheVoidGame {
                 int cx = startX + i * (cardW + spacing);
                 if (x >= cx && x <= cx + cardW) {
                     selectedUnitType = i + 1;
+                    placeAllyFromBase();
                     return;
                 }
             }
         }
-        BasePosition positions = getBasePositionsForLevel(currentLevel);
-        double floorY = positions.floorY;
-        int floorTolerance = 40;
-
-        if (x > 150 && x < CANVAS_WIDTH * 0.6 && 
-            y > floorY - floorTolerance && y < floorY + floorTolerance) {
-            placeAlly(x, floorY);
-        }
     }
     
-    private void placeAlly(double x, double y) {
+    private void placeAllyFromBase() {
         int cost = gameManager.getAllyCost(selectedUnitType);
         if (energy >= cost) {
-            GameUnit ally = gameManager.createAlly(selectedUnitType, x, y);
+            BasePosition positions = getBasePositionsForLevel(currentLevel);
+            GameUnit ally = gameManager.createAlly(selectedUnitType, positions.playerX + 40, positions.floorY);
             if (ally != null) {
                 allies.add(ally);
                 energy -= cost;
@@ -248,9 +238,14 @@ public class HeartOfTheVoidGame {
     private void updateGame(double deltaTime) {
         gameTime += deltaTime;
         
-        energy = Math.min(MAX_ENERGY, energy + (int)(3 * deltaTime));
+        difficultyMultiplier = 1.0 + (gameTime / 60.0);
         
-        double spawnInterval = gameManager.calculateSpawnInterval(wave, difficultyMultiplier);
+        if (gameTime - lastMoneyRegen > 2.0) {
+            energy = Math.min(MAX_ENERGY, energy + 5);
+            lastMoneyRegen = gameTime;
+        }
+        
+        double spawnInterval = Math.max(0.8, 3.0 - (gameTime / 120.0));
         
         if (gameTime - lastEnemySpawn > spawnInterval) {
             spawnEnemy();
@@ -266,18 +261,9 @@ public class HeartOfTheVoidGame {
     
     private void spawnEnemy() {
         BasePosition positions = getBasePositionsForLevel(currentLevel);
-        GameUnit enemy = gameManager.createEnemy(wave, difficultyMultiplier, positions.floorY);
+        int enemyType = 1 + (int)(Math.random() * Math.min(4, 1 + gameTime / 30.0));
+        GameUnit enemy = gameManager.createEnemyAtPosition(enemyType, difficultyMultiplier, positions.enemyX - 40, positions.floorY);
         enemies.add(enemy);
-    }
-    
-    private void progressToNextWave() {
-        wave++;
-        enemiesKilledThisWave = 0;
-        enemiesNeededForNextWave = 10 + wave * 3;
-        difficultyMultiplier += 0.25;
-        
-        energy = Math.min(MAX_ENERGY, energy + 15);
-        System.out.println("Vague " + wave + " ! Difficulté: " + String.format("%.1f", difficultyMultiplier));
     }
     
     private void updateUnits(double deltaTime) {
@@ -292,14 +278,9 @@ public class HeartOfTheVoidGame {
             
             if (!unit.isAlive()) {
                 if (!isAlly) {
-                    int reward = gameManager.getEnemyReward(unit.unitType, wave);
+                    int reward = gameManager.getEnemyReward(unit.unitType, 1);
                     energy += reward;
                     score += reward * 2;
-                    enemiesKilledThisWave++;
-                    
-                    if (enemiesKilledThisWave >= enemiesNeededForNextWave) {
-                        progressToNextWave();
-                    }
                 }
                 it.remove();
                 continue;
@@ -378,7 +359,7 @@ public class HeartOfTheVoidGame {
             if (!gameEnded) {
                 isRunning = false;
                 gameEnded = true;
-                gameEndMessage = "DÉFAITE";
+                gameEndMessage = "GAME OVER";
                 gameEndColor = Color.RED;
                 
                 allies.clear();
@@ -388,37 +369,28 @@ public class HeartOfTheVoidGame {
                 if (gameLoop != null) {
                     gameLoop.stop();
                 }
-                
-                System.out.println("Partie terminée - DÉFAITE");
             }
             
         } else if (!enemyBase.isAlive() && isRunning) {
-            wave++;
-            
-            gameEndMessage = "VICTOIRE - Vague " + wave;
-            gameEndColor = Color.GOLD;
-            
-            enemies.clear();
-            projectiles.clear();
-            
-            BasePosition positions = getBasePositionsForLevel(currentLevel);
-            enemyBase = new GameBase(positions.enemyX, positions.floorY, false);
-            enemyBase.health = enemyBase.maxHealth = 300 + wave * 100;
-            energy = Math.min(MAX_ENERGY, energy + 25);
-            score += 100;
-            
-            enemiesKilledThisWave = 0;
-            enemiesNeededForNextWave = 10 + wave * 3;
-            difficultyMultiplier += 0.3;
-            
-            System.out.println("Victoire ! Vague " + wave + " commence");
-            
-            javafx.animation.Timeline timeline = new javafx.animation.Timeline(
-                new javafx.animation.KeyFrame(javafx.util.Duration.seconds(3), e -> {
-                    gameEndMessage = "";
-                })
-            );
-            timeline.play();
+            if (!gameEnded) {
+                isRunning = false;
+                gameEnded = true;
+                gameEndMessage = "VICTOIRE";
+                gameEndColor = Color.GOLD;
+                
+                audioManager.stopCurrentMusic();
+                
+                if (gameLoop != null) {
+                    gameLoop.stop();
+                }
+                
+                javafx.animation.Timeline timeline = new javafx.animation.Timeline(
+                    new javafx.animation.KeyFrame(javafx.util.Duration.seconds(2), e -> {
+                        returnToMenu();
+                    })
+                );
+                timeline.play();
+            }
         }
     }
     
@@ -443,9 +415,9 @@ public class HeartOfTheVoidGame {
         
         if (isPaused) {
             uiRenderer.renderPauseScreen(gc);
-        } else if (!isRunning) {
-            uiRenderer.renderGameOverScreen(gc, score, wave);
-        } else {
+        } else if (!isRunning && gameEndMessage.equals("GAME OVER")) {
+            uiRenderer.renderGameOverScreen(gc, score, (int)gameTime);
+        } else if (isRunning) {
             int[] unitCosts = new int[] {40,60,85,150};
             uiRenderer.renderGameUI(gc, energy, selectedUnitType, unitCosts, allyImages,
                     playerBase.health, playerBase.maxHealth, enemyBase.health, enemyBase.maxHealth);
@@ -489,8 +461,8 @@ public class HeartOfTheVoidGame {
     
     private String getBackgroundForLevel(int level) {
         return switch (level) {
-            case 1 -> "file:resources/images/backgrounds/City_of_Tears_background.png";
-            case 2 -> "file:resources/images/backgrounds/void_arena_battle.png";
+            case 1 -> "file:resources/images/backgrounds/void_arena_battle.png";
+            case 2 -> "file:resources/images/backgrounds/City_of_Tears_background.png";
             case 3 -> "file:resources/images/backgrounds/nightmare_background.jpg";
             default -> "file:resources/images/backgrounds/void_arena_battle.png";
         };
@@ -500,26 +472,26 @@ public class HeartOfTheVoidGame {
         return switch (level) {
             case 1 -> {
                 double playerX = 150;
-                double enemyX = CANVAS_WIDTH - 120;
-                double floorY = CANVAS_HEIGHT - 90;
+                double enemyX = CANVAS_WIDTH - 150;
+                double floorY = CANVAS_HEIGHT - 75;
                 yield new BasePosition(playerX, enemyX, floorY);
             }
             case 2 -> {
-                double playerX = 80;
-                double enemyX = CANVAS_WIDTH - 80;
-                double floorY = CANVAS_HEIGHT - 80;
+                double playerX = 150;
+                double enemyX = CANVAS_WIDTH - 150;
+                double floorY = CANVAS_HEIGHT - 75;
                 yield new BasePosition(playerX, enemyX, floorY);
             }
             case 3 -> {
-                double playerX = 80;
-                double enemyX = CANVAS_WIDTH - 80;
+                double playerX = 150;
+                double enemyX = CANVAS_WIDTH - 150;
                 double floorY = CANVAS_HEIGHT - 80;
                 yield new BasePosition(playerX, enemyX, floorY);
             }
             default -> {
-                double playerX = 80;
-                double enemyX = CANVAS_WIDTH - 80;
-                double floorY = CANVAS_HEIGHT - 100;
+                double playerX = 150;
+                double enemyX = CANVAS_WIDTH - 150;
+                double floorY = CANVAS_HEIGHT - 80;
                 yield new BasePosition(playerX, enemyX, floorY);
             }
         };
@@ -539,22 +511,16 @@ public class HeartOfTheVoidGame {
     }
     
     private void returnToMenu() {
-        System.out.println("Retour au menu de sélection...");
-        
-        // Arrêter le jeu actuel
         isRunning = false;
         isPaused = false;
         gameEnded = true;
         
-        // Arrêter l'audio
         audioManager.stopCurrentMusic();
         
-        // Arrêter la boucle de jeu
         if (gameLoop != null) {
             gameLoop.stop();
         }
         
-        // Retourner au menu de sélection
         try {
             Class<?> levelSelectClass = Class.forName("demo.menus.LevelSelectMenu");
             Object levelMenu = levelSelectClass.getDeclaredConstructor().newInstance();
@@ -563,9 +529,7 @@ public class HeartOfTheVoidGame {
             startMethod.invoke(levelMenu, (javafx.stage.Stage) canvas.getScene().getWindow());
             
         } catch (Exception e) {
-            System.err.println("Erreur lors du retour au menu: " + e.getMessage());
             e.printStackTrace();
-            // En cas d'erreur, fermer la fenêtre
             ((javafx.stage.Stage) canvas.getScene().getWindow()).close();
         }
     }

@@ -97,16 +97,6 @@ public class GameUnit {
         if (health < maxHealth) {
             renderHealthBar(gc);
         }
-        
-        if (canAttack() && range > 0 && shouldShowRange()) {
-            gc.setStroke(Color.web(color.toString(), 0.15));
-            gc.setLineWidth(1);
-            gc.strokeOval(x-range, y-range, range*2, range*2);
-        }
-    }
-    
-    private boolean shouldShowRange() {
-        return true;
     }
     
     private void renderFallbackSprite(GraphicsContext gc) {

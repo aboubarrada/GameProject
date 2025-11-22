@@ -1,6 +1,10 @@
 @echo off
 cd /d "%~dp0"
 
+:: Configuration du JDK
+set "JAVA_HOME=C:\Program Files\Java\jdk-25"
+set "PATH=%JAVA_HOME%\bin;%PATH%"
+
 echo ================================
 echo  Heart of the Void - Compilation
 echo ================================
