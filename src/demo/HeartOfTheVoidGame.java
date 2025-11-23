@@ -23,6 +23,7 @@ import demo.managers.GameManager;
 import demo.ui.UIRenderer;
 import demo.audio.AudioManager;
 
+// Stocke les positions des bases
 class BasePosition {
     double playerX, enemyX, floorY;
     
@@ -33,6 +34,7 @@ class BasePosition {
     }
 }
 
+// Classe principale du jeu (boucle de jeu et combat)
 public class HeartOfTheVoidGame {
     
     private static final int CANVAS_WIDTH = 1000;
@@ -76,6 +78,10 @@ public class HeartOfTheVoidGame {
     
     private Stage gameStage;
     
+    /**
+     * Démarre le jeu avec le niveau sélectionné.
+     * @param stage La fenêtre JavaFX
+     */
     public void start(Stage stage) {
         this.gameStage = stage;
         gameManager = new GameManager();
@@ -87,10 +93,18 @@ public class HeartOfTheVoidGame {
         startGameLoop();
     }
     
+    /**
+     * Définit le niveau à jouer (1, 2 ou 3).
+     * @param level Le numéro du niveau
+     */
     public void setLevel(int level) {
         this.currentLevel = level;
     }
     
+    /**
+     * Configure l'interface graphique et charge les images.
+     * @param stage La fenêtre du jeu
+     */
     private void setupUI(Stage stage) {
         canvas = new Canvas(CANVAS_WIDTH, CANVAS_HEIGHT);
         gc = canvas.getGraphicsContext2D();
@@ -138,6 +152,9 @@ public class HeartOfTheVoidGame {
         });
     }
     
+    /**
+     * Initialise une nouvelle partie : crée les bases, reset l'énergie, vide les listes.
+     */
     private void initializeGame() {
         BasePosition positions = getBasePositionsForLevel(currentLevel);
         
@@ -173,6 +190,10 @@ public class HeartOfTheVoidGame {
         gameEndColor = Color.WHITE;
     }
     
+    /**
+     * Gère le clic de souris pour sélectionner et déployer des unités.
+     * @param event L'événement de clic
+     */
     private void handleMouseClick(MouseEvent event) {
         if (!isRunning || isPaused) return;
 
@@ -209,9 +230,10 @@ public class HeartOfTheVoidGame {
                 allies.add(ally);
                 energy -= cost;
             }
-        }
+        };
     }
     
+    // Lance la boucle de jeu principale
     private void startGameLoop() {
         gameLoop = new AnimationTimer() {
             private long lastUpdate = 0;
@@ -235,6 +257,7 @@ public class HeartOfTheVoidGame {
         gameLoop.start();
     }
     
+    // Met à jour la logique du jeu (ennemis, combats, projectiles)
     private void updateGame(double deltaTime) {
         gameTime += deltaTime;
         
@@ -312,6 +335,7 @@ public class HeartOfTheVoidGame {
         }
     }
     
+    // Met à jour tous les projectiles
     private void updateProjectiles(double deltaTime) {
         Iterator<GameProjectile> it = projectiles.iterator();
         while (it.hasNext()) {
@@ -394,6 +418,7 @@ public class HeartOfTheVoidGame {
         }
     }
     
+    // Dessine tout le jeu à l'écran
     private void renderGame() {
         renderLevelBackground();
         
@@ -468,6 +493,7 @@ public class HeartOfTheVoidGame {
         };
     }
     
+    // Retourne les positions des bases selon le niveau
     private BasePosition getBasePositionsForLevel(int level) {
         return switch (level) {
             case 1 -> {
@@ -497,6 +523,7 @@ public class HeartOfTheVoidGame {
         };
     }
     
+    // Met le jeu en pause ou le reprend
     private void togglePause() {
         isPaused = !isPaused;
         if (isPaused) {
@@ -506,10 +533,12 @@ public class HeartOfTheVoidGame {
         }
     }
     
+    // Recommence le niveau actuel
     private void restartGame() {
         initializeGame();
     }
     
+    // Retourne au menu principal
     private void returnToMenu() {
         isRunning = false;
         isPaused = false;
@@ -534,6 +563,7 @@ public class HeartOfTheVoidGame {
         }
     }
     
+    // Arrête complètement le jeu
     private void stopGame() {
         audioManager.stopCurrentMusic();
         if (gameLoop != null) {

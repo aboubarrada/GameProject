@@ -4,6 +4,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
+// Représente un projectile lancé par une unité
 public class GameProjectile {
     public double x, y, targetX, targetY;
     public double speed = 250;

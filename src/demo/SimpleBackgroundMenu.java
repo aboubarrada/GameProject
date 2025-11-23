@@ -9,6 +9,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
+// Menu principal avec image de fond
 public class SimpleBackgroundMenu extends Application {
     
     @Override

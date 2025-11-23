@@ -6,6 +6,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
+// Représente une base (objectif à défendre ou détruire)
 public class GameBase {
     public double x, y;
     public int health, maxHealth;

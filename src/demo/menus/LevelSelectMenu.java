@@ -9,6 +9,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
+// Menu de sélection de niveau
 public class LevelSelectMenu extends Application {
     
     private Stage stage;

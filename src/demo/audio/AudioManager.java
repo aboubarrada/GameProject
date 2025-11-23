@@ -5,6 +5,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
 import java.io.File;
 
+// Gère la musique de fond du jeu
 public class AudioManager {
     
     private MediaPlayer backgroundMusic;

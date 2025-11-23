@@ -7,6 +7,7 @@ import javafx.scene.paint.Color;
 import java.util.List;
 import java.util.Random;
 
+// Gère la création des unités, ennemis et projectiles
 public class GameManager {
     private static final int CANVAS_WIDTH = 1000;
     private static final int CANVAS_HEIGHT = 600;

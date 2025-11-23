@@ -6,6 +6,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
+// Gère l'affichage de l'interface utilisateur
 public class UIRenderer {
     private static final int CANVAS_WIDTH = 1000;
     private static final int CANVAS_HEIGHT = 600;
