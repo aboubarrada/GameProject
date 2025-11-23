@@ -31,7 +31,6 @@ public class GameBase {
             }
         } catch (Exception e) {
             baseImage = null;
-            System.out.println("Erreur chargement image base: " + e.getMessage());
         }
     }
     
@@ -49,7 +48,6 @@ public class GameBase {
     public void render(GraphicsContext gc) {
         if (y < 400) {
             y = 500;
-            System.out.println("Base repositionnée au sol: " + (isPlayerBase ? "Player" : "Enemy"));
         }
         
         if (baseImage != null) {

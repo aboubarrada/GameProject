@@ -20,7 +20,6 @@ public class UIRenderer {
         try {
             moneyImage = new Image("file:resources/images/ui/Money.png");
         } catch (Exception e) {
-            System.out.println("Impossible de charger l'icône monnaie: " + e.getMessage());
         }
         try {
             playerBaseImage = new Image("file:resources/images/ui/Void_statue.png");
@@ -109,20 +108,20 @@ public class UIRenderer {
     }
 
     private void renderBaseIcons(GraphicsContext gc, int playerBaseHealth, int playerBaseMax, int enemyBaseHealth, int enemyBaseMax) {
-        // left: player base icon
+        // Icône de la base du joueur à gauche
         int iconSize = 48;
         int padding = 8;
         if (playerBaseImage != null) {
             gc.drawImage(playerBaseImage, padding, padding, iconSize, iconSize);
         }
-        // health bar
+        // Barre de vie du joueur
         double pct = (double)playerBaseHealth / Math.max(1, playerBaseMax);
         gc.setFill(Color.web("#2c2c2c"));
         gc.fillRoundRect(padding + iconSize + 6, padding + 6, 120, 12, 4, 4);
         gc.setFill(Color.GREEN);
         gc.fillRoundRect(padding + iconSize + 6, padding + 6, 120 * pct, 12, 4, 4);
 
-        // right: enemy base icon
+        // Icône de la base ennemie à droite
         int rx = CANVAS_WIDTH - padding - iconSize;
         if (enemyBaseImage != null) {
             gc.drawImage(enemyBaseImage, rx, padding, iconSize, iconSize);

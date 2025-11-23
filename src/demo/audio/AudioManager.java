@@ -30,9 +30,8 @@ public class AudioManager {
                     System.out.println("Fichier audio introuvable: " + musicFile);
                 }
             } catch (Exception e) {
-                System.out.println("Erreur lecture audio: " + e.getMessage());
             }
-        }
+        });
     }
     
     private String getMusicFileForLevel(int level) {
