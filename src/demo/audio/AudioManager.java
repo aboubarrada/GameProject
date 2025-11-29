@@ -25,13 +25,10 @@ public class AudioManager {
                     backgroundMusic.setVolume(volume);
                     backgroundMusic.setCycleCount(MediaPlayer.INDEFINITE);
                     backgroundMusic.play();
-                    System.out.println("Musique niveau " + level + " lancée");
-                } else {
-                    System.out.println("Fichier audio introuvable: " + musicFile);
                 }
             } catch (Exception e) {
             }
-        });
+        }
     }
     
     private String getMusicFileForLevel(int level) {
