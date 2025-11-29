@@ -6,6 +6,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
+// Gère l'affichage de l'interface utilisateur
 public class UIRenderer {
     private static final int CANVAS_WIDTH = 1000;
     private static final int CANVAS_HEIGHT = 600;
@@ -19,7 +20,6 @@ public class UIRenderer {
         try {
             moneyImage = new Image("file:resources/images/ui/Money.png");
         } catch (Exception e) {
-            System.out.println("Impossible de charger l'icône monnaie: " + e.getMessage());
         }
         try {
             playerBaseImage = new Image("file:resources/images/ui/Void_statue.png");
@@ -43,10 +43,13 @@ public class UIRenderer {
     
     private void renderEnergyBar(GraphicsContext gc, int energy) {
         if (moneyImage != null) {
-            gc.setFill(Color.web("#1a1a2e", 0.8));
-            gc.fillRoundRect(5, 5, 200, 50, 8, 8);
-            
+            gc.save();
+            gc.beginPath();
+            gc.rect(10, 10, 40, 40);
+            gc.clip();
             gc.drawImage(moneyImage, 10, 10, 40, 40);
+            gc.restore();
+            
             gc.setFill(Color.GOLD);
             gc.setFont(Font.font("Arial", FontWeight.BOLD, 18));
             gc.fillText(": " + energy + "/" + MAX_ENERGY, 55, 35);
@@ -105,20 +108,20 @@ public class UIRenderer {
     }
 
     private void renderBaseIcons(GraphicsContext gc, int playerBaseHealth, int playerBaseMax, int enemyBaseHealth, int enemyBaseMax) {
-        // left: player base icon
+        // Icône de la base du joueur à gauche
         int iconSize = 48;
         int padding = 8;
         if (playerBaseImage != null) {
             gc.drawImage(playerBaseImage, padding, padding, iconSize, iconSize);
         }
-        // health bar
+        // Barre de vie du joueur
         double pct = (double)playerBaseHealth / Math.max(1, playerBaseMax);
         gc.setFill(Color.web("#2c2c2c"));
         gc.fillRoundRect(padding + iconSize + 6, padding + 6, 120, 12, 4, 4);
         gc.setFill(Color.GREEN);
         gc.fillRoundRect(padding + iconSize + 6, padding + 6, 120 * pct, 12, 4, 4);
 
-        // right: enemy base icon
+        // Icône de la base ennemie à droite
         int rx = CANVAS_WIDTH - padding - iconSize;
         if (enemyBaseImage != null) {
             gc.drawImage(enemyBaseImage, rx, padding, iconSize, iconSize);

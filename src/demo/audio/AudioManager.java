@@ -5,6 +5,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
 import java.io.File;
 
+// Gère la musique de fond du jeu
 public class AudioManager {
     
     private MediaPlayer backgroundMusic;
@@ -24,12 +25,8 @@ public class AudioManager {
                     backgroundMusic.setVolume(volume);
                     backgroundMusic.setCycleCount(MediaPlayer.INDEFINITE);
                     backgroundMusic.play();
-                    System.out.println("Musique niveau " + level + " lancée");
-                } else {
-                    System.out.println("Fichier audio introuvable: " + musicFile);
                 }
             } catch (Exception e) {
-                System.out.println("Erreur lecture audio: " + e.getMessage());
             }
         }
     }

@@ -6,6 +6,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
+// Représente une unité combattante (allié ou ennemi)
 public class GameUnit {
     public double x, y;
     public int health, maxHealth, damage;
@@ -17,6 +18,19 @@ public class GameUnit {
     public double attackCooldown = 0;
     public double speed = 30;
     
+    /**
+     * Crée une nouvelle unité.
+     * @param x Position horizontale
+     * @param y Position verticale
+     * @param isAlly true si c'est un allié, false si c'est un ennemi
+     * @param health Points de vie
+     * @param damage Dégâts infligés
+     * @param attackSpeed Vitesse d'attaque (attaques par seconde)
+     * @param range Portée d'attaque
+     * @param color Couleur de l'unité
+     * @param name Nom de l'unité
+     * @param unitType Type d'unité (0-3)
+     */
     public GameUnit(double x, double y, boolean isAlly, int health, int damage, double attackSpeed, double range, Color color, String name, int unitType) {
         this.x = x;
         this.y = y;
@@ -58,7 +72,7 @@ public class GameUnit {
     public double distanceTo(double otherX, double otherY) {
         double dx = x - otherX;
         double dy = y - otherY;
-        return Math.sqrt(dx*dx + dy*dy);
+        return Math.sqrt(dx * dx + dy * dy);
     }
     
     public boolean canAttack() {
@@ -97,16 +111,6 @@ public class GameUnit {
         if (health < maxHealth) {
             renderHealthBar(gc);
         }
-        
-        if (canAttack() && range > 0 && shouldShowRange()) {
-            gc.setStroke(Color.web(color.toString(), 0.15));
-            gc.setLineWidth(1);
-            gc.strokeOval(x-range, y-range, range*2, range*2);
-        }
-    }
-    
-    private boolean shouldShowRange() {
-        return true;
     }
     
     private void renderFallbackSprite(GraphicsContext gc) {
